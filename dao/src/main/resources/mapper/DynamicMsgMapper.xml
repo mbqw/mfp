@@ -46,7 +46,8 @@
         <result column="headshow" property="user.headshow"/>
     </resultMap>
     <select id="findByObjectPageList" resultMap="msg_user">
-        SELECT msg.*,u.username,u.headshow FROM (SELECT * FROM u_dyn_msg ORDER BY createTime DESC) msg
+        SELECT msg.id,SUBSTRING(msg.content,1,100)content,msg.img,msg.like,msg.unlike,msg.u_id,u.username,u.headshow
+        FROM (SELECT * FROM u_dyn_msg ORDER BY createTime DESC) msg
         LEFT JOIN USER u
         ON u.id=msg.u_id
         <where>

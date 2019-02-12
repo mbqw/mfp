@@ -59,3 +59,13 @@ function moreContent() {
     }
 
 }
+//弹出发布信息框
+function addMsg() {
+    layer.open({
+        type: 2,
+        area: ['700px', '450px'],
+        fixed: false, //不固定
+        maxmin: true,
+        content: '/msg/addMsg/'+$("#user_id").val()
+    });
+}

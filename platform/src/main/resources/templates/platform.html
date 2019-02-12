@@ -14,15 +14,28 @@
             word-break: break-all;
             overflow: hidden;
         }
-
+        body {
+            background-color: #F2F3F4;
+        }
     </style>
 </head>
 <body>
-<iframe src="" frameborder="0" height="100%" class="myiframe" scrolling="yes"></iframe>
+<input type="hidden" id="user_id" th:value="${id}">
+<iframe src="" frameborder="0" height="100%" class="myiframe" scrolling="yes" ></iframe>
+<!--菜单-->
+<div class="content-menu">
+    <ul>
+        <li th:onclick="addMsg()">发布</li>
+        <li>收藏</li>
+        <li>主页</li>
+        <li>个人资料</li>
+    </ul>
+</div>
 <!--内容-->
-<div></div>
-<div id="container" style="top: 50px;"></div>
+<div id="container" style="top: 20px;left: 50px;right: -50px"></div>
+<!--模态框-->
 <div id="mask" class="mask"></div>
+<!--弹窗-->
 <div id="userDetail" class="userDetail"></div>
 
 <!-- the overlay element -->
@@ -51,16 +64,15 @@
                 <div class="media-body">
                     <input type="hidden" id="id" value="{{value}}"/>
                     <h5 class="media-heading">{{value.user.username}}</h5>
-                    {{if value.content.length<=50}}
+                    {{if value.content.length<100}}
                     <p id="msg_p" style="font-size: small">
                         {{value.content}}
                     </p>
-                    <a id="msg_a" onclick="moreContent()" href="javascript:void(0)" class="msg_a">更多...</a>
                     {{else}}
                     <p style="font-size: small">
                         {{value.content}}
                     </p>
-
+                    <a id="msg_a" onclick="moreContent()" href="javascript:void(0)" class="msg_a">更多...</a>
                     {{/if}}
                 </div>
             </div>
@@ -128,6 +140,7 @@
             }
         },
     });
+
 </script>
 </body>
 </html>
