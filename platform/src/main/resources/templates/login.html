@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登陆</title>
+
+    <link rel="stylesheet" type="text/css" href="/css/login/styles.css">
+    <style type="text/css">
+        body,td,th { font-family: "Source Sans Pro", sans-serif; }
+        body { background-color: #2B2B2B; }
+        .mysmall{
+            position: absolute;
+        }
+        .mysmall:hover{
+            cursor: pointer
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+
+    <div id="container1" class="container">
+        <h1 id="h1">登陆</h1>
+        <form id="loginForm" class="form" onsubmit="return false;">
+            <input type="text" placeholder="账户" name="account">
+            <input type="password" placeholder="密码" name="password">
+            <button type="submit" onclick="login()">登陆</button><br>
+            <small class="mysmall" style="margin:14px -40px" onclick="toRegister(true)">注册 /</small>
+            <small class="mysmall" style="margin:14px 0px" onclick="toReset(true)">忘记密码</small>
+        </form>
+    </div>
+    <div id="container2" class="container" style="display: none">
+        <h1>注册</h1>
+        <form id="registerForm" class="form" onsubmit="return false;">
+            <input type="text" placeholder="用户名" name="username" onblur="isExist('username')">
+            <span id="registerSpan1" style="font-size: smaller;display: none;color: red;">不能为空</span>
+            <input type="text" placeholder="登陆账户" name="account" onblur="formValidate('account')">
+            <span id="registerSpan2" style="font-size: smaller;display: none;color: red;">不能为空</span>
+            <input type="password" placeholder="登陆密码" name="password" onblur="formValidate('password')">
+            <span id="registerSpan3" style="font-size: smaller;display: none;color: red;">不能为空</span>
+            <input type="text" placeholder="邮箱" name="email" onblur="formValidate('email')">
+            <span id="registerSpan4" style="font-size: smaller;display: none;color: red;">不能为空</span>
+            <button type="submit" onclick="register()">注册</button><br>
+            <small class="mysmall" style="margin:14px -35px" onclick="toRegister(false)">&rarr;返回登陆</small>
+        </form>
+    </div>
+    <div id="container3" class="container" style="display: none">
+        <h1><span id="span1" style="color: yellow">填写信息</span>&rarr;<span id="span2">验证</span></h1>
+        <form id="resetForm" class="form" onsubmit="return false;">
+            <input type="text" placeholder="账户" name="account">
+            <input type="email" placeholder="邮箱" name="email">
+            <button type="submit" onclick="checkPE()">获取验证码</button><br>
+            <small class="mysmall" style="margin:14px -35px" onclick="toReset(false)">&rarr;返回登陆</small>
+        </form>
+        <form id="resetForm2" class="form" onsubmit="return false;" style="display: none">
+            <input type="hidden" name="id">
+            <input type="text" placeholder="新密码" name="password">
+            <input type="text" placeholder="请输入邮箱收到的验证码" name="key">
+            <button type="submit" onclick="resetPW()">重置</button><br>
+            <small class="mysmall" style="margin:14px -35px" onclick="returnStep1(true)">&larr;上一步</small>
+        </form>
+    </div>
+
+    <ul class="bg-bubbles">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+
+</div>
+
+<script type="text/javascript" src="/js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript">
+    //登陆
+    function login(){
+        var account = $("#loginForm input[name='account']").val();
+        var password = $("#loginForm input[name='password']").val();
+        if (account==''||password==''){
+            $('#loginForm').fadeOut(500);
+            $("#h1").text("账号密码不能为空");
+            $('.wrapper').addClass('form-success');
+            setTimeout(function () {
+                $('#loginForm').fadeIn(500);
+                $("#h1").text("登陆");
+                $('.wrapper').removeClass('form-success');
+            },1000);
+            return;
+        }
+        $.ajax({
+            type:'POST',
+            data:$("#loginForm").serialize(),
+            dataType:"JSON",
+            url:'/common/toLogin',
+            success:function (data) {
+                if (data.success) {
+                    $('#loginForm').fadeOut(500);
+                    $("#h1").text("欢迎");
+                    $('.wrapper').addClass('form-success');
+                    setTimeout(function () {
+                        location.href="/platform/index/"+data.id;
+                    },500);
+
+                }else{
+                    $('#loginForm').fadeOut(500);
+                    $("#h1").text("账号或密码错误");
+                    $('.wrapper').addClass('form-success');
+                    setTimeout(function () {
+                        $('#loginForm').fadeIn(500);
+                        $("#h1").text("登陆");
+                        $('.wrapper').removeClass('form-success');
+                    },1000);
+                }
+            }
+        });
+    }
+    //注册页面
+    function toRegister(t) {
+        if (t) {
+            $('#container1').fadeOut(500);
+            setTimeout(function () {
+                $('#container2').fadeIn(500);
+            },500);
+        }else{
+            $('#container2').fadeOut(500);
+            setTimeout(function () {
+                $('#container1').fadeIn(500);
+            },500);
+        }
+    }
+    //账号是否重复
+    function isExist(type) {
+        formValidate(type);
+        if ($("#registerSpan1").css("display")!='none'){
+            return;
+        }
+        $.ajax({
+            type:'POST',
+            data:$("#resetForm").serialize(),
+            dataType:"JSON",
+            url:'/common/checkPE',
+            success:function (data) {
+                if (data.success) {
+                    $("#registerSpan1").css("display","");
+                    $("#registerSpan1").text("此账号已存在");
+                }else{
+                    if (data.info=="账号不存在"){
+                        $("#registerSpan1").css("display","none");
+                    } else{
+                        $("#registerSpan1").css("display","");
+                        $("#registerSpan1").text(data.info);
+                    }
+                }
+            }
+        });
+    }
+    //注册校验
+    function formValidate(type) {
+        var myValue = $("#registerForm input[name='"+type+"']").val();
+        if (type=='username'){
+            if (!/^[\u4E00-\u9FA5A-Za-z][\u4E00-\u9FA5A-Za-z0-9_]{1,11}/.test(myValue)){
+                $("#registerSpan1").css("display","");
+                $("#registerSpan1").text("请输入首位为汉字字母的汉字字母数字下划线组合,长度为2-12");
+            }else{
+                $("#registerSpan1").css("display","none");
+            }
+        } else if(type=='account'){
+            if (!/^[A-Za-z][A-Za-z0-9_]{5,17}/.test(myValue)){
+                $("#registerSpan2").css("display","");
+                $("#registerSpan2").text("请输入首位为字母的数字字母下划线组合,长度为6-18");
+            }else{
+                $("#registerSpan2").css("display","none");
+            }
+        }else if(type=='password'){
+            if (!/^[A-Za-z][A-Za-z0-9_]{5,17}/.test(myValue)){
+                $("#registerSpan3").css("display","");
+                $("#registerSpan3").text("请输入首位为字母的数字字母下划线组合,长度为6-18");
+            }else{
+                $("#registerSpan3").css("display","none");
+            }
+        }else if(type=='email'){
+            if (!/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(myValue)){
+                $("#registerSpan4").css("display","");
+                if (!$("#span4BR").length>0) {
+                    $("<br id='span4BR'>").insertAfter($("#registerSpan4"));
+                }
+                $("#registerSpan4").text("请输入正确的邮箱地址");
+            }else{
+                if ($("#span4BR").length>0) {
+                    $("#span4BR").remove();
+                }
+                $("#registerSpan4").css("display","none");
+            }
+        }
+    }
+    //注册
+    function register() {
+        var t =true;
+        $("#registerForm input").each(function(key,value){
+            if ($(this).val()==''){
+                formValidate($(this).attr("name"));
+            }
+        });
+        $("#registerForm span").each(function(key,value){
+            if ($(this).css("display")!='none'){
+               t=false;
+                return false;
+            }
+        });
+        if (!t){
+            return;
+        }
+        $.ajax({
+            type:'POST',
+            data:$("#registerForm").serialize(),
+            dataType:"JSON",
+            url:'/common/register',
+            success:function (data) {
+                if (data.success) {
+                    $('#registerForm').fadeOut(500);
+                    $("#container2 h1").text("注册成功");
+                    $('.wrapper').addClass('form-success');
+                    setTimeout(function () {
+                        location.href="/platform/home/"+data.id;
+                    },500);
+                }else{
+                    $('#registerForm').fadeOut(500);
+                    $('.wrapper').addClass('form-success');
+                    $("#container2 h1").text("注册失败,请重试");
+                    setTimeout(function () {
+                        $('#registerForm').fadeIn(500);
+                        $("#container2 h1").text("注册");
+                        $('.wrapper').removeClass('form-success');
+                    },1000);
+                }
+            }
+        });
+    }
+    //重置密码页面
+    function toReset(t) {
+        if (t) {
+            $('#container1').fadeOut(500);
+            setTimeout(function () {
+                $('#container3').fadeIn(500);
+            },500);
+        }else{
+            $('#container3').fadeOut(500);
+            setTimeout(function () {
+                $('#container1').fadeIn(500);
+            },500);
+        }
+    }
+    //重置密码前验证
+    function checkPE() {
+        var account = $("#resetForm input[name='account']").val();
+        var email = $("#resetForm input[name='email']").val();
+        if (account==''||email==''){
+            $('#resetForm').fadeOut(500);
+            $('.wrapper').addClass('form-success');
+            $("#container3 h1").text("账户和邮箱不能为空");
+            setTimeout(function () {
+                $('#resetForm').fadeIn(500);
+                $("#container3 h1").html("<span id='span1' style='color: yellow'>填写信息</span>&rarr;<span id='span2'>验证</span>");
+                $('.wrapper').removeClass('form-success');
+            },1000);
+            return;
+        }
+        $.ajax({
+            type:'POST',
+            data:$("#resetForm").serialize(),
+            dataType:"JSON",
+            url:'/common/checkPE',
+            success:function (data) {
+                if (data.success) {
+                    $("#resetForm2 input[name='id']").val(data.id);
+                    $('#resetForm').fadeOut(500);
+                    $("#span1").css("color","");
+                    $("#span2").css("color","yellow");
+                    setTimeout(function () {
+                        $('#resetForm2').fadeIn(500);
+                    },500);
+                }else{
+                    $('#resetForm').fadeOut(500);
+                    $('.wrapper').addClass('form-success');
+                    $("#container3 h1").text("账户或邮箱错误");
+                    setTimeout(function () {
+                        $('#resetForm').fadeIn(500);
+                        $("#container3 h1").html("<span id='span1' style='color: yellow'>填写信息</span>&rarr;<span id='span2'>验证</span>");
+                        $('.wrapper').removeClass('form-success');
+                    },1000);
+                }
+            }
+        });
+    }
+    //返回上一步
+    function returnStep1() {
+        $('#resetForm2').fadeOut(500);
+        $("#span2").css("color","");
+        $("#span1").css("color","yellow");
+        setTimeout(function () {
+            $('#resetForm').fadeIn(500);
+        },500);
+    }
+    //重置
+    function resetPW() {
+        var password = $("#resetForm2 input[name='password']").val();
+        var key = $("#resetForm2 input[name='key']").val();
+        if (password==''||key==''){
+            $('#resetForm2').fadeOut(500);
+            $('.wrapper').addClass('form-success');
+            $("#container3 h1").text("新密码和验证码不能为空");
+            setTimeout(function () {
+                $('#resetForm2').fadeIn(500);
+                $("#container3 h1").html("<span id='span1'>填写信息</span>&rarr;<span id='span2' style='color: yellow'>验证</span>");
+                $('.wrapper').removeClass('form-success');
+            },1000);
+            return;
+        }
+        $.ajax({
+            type:'POST',
+            data:$("#resetForm2").serialize(),
+            dataType:"JSON",
+            url:'/common/resetPW',
+            success:function (data) {
+                if (data.success) {
+                    $('#resetForm2').fadeOut(500);
+                    $('.wrapper').addClass('form-success');
+                    $("#container3 h1").text("重置密码成功");
+                    setTimeout(function () {
+                        $('.wrapper').removeClass('form-success');
+                        $('#container3').fadeOut(500);
+                        setTimeout(function () {
+                            $('#container1').fadeIn(500);
+                        },500);
+                    },1000);
+                }else{
+                    $('#resetForm2').fadeOut(500);
+                    $('.wrapper').addClass('form-success');
+                    $("#container3 h1").text(data.info);
+                    setTimeout(function () {
+                        $('#resetForm2').fadeIn(500);
+                        $("#container3 h1").html("<span id='span1'>填写信息</span>&rarr;<span id='span2' style='color: yellow'>验证</span>");
+                        $('.wrapper').removeClass('form-success');
+                    },1000);
+                }
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

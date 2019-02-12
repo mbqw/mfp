@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>欢迎</title>
+    <th:block th:replace="/common::css2">
+    </th:block>
+    <style>
+        p{
+            word-wrap: break-word;
+            word-break: break-all;
+            overflow: hidden;
+        }
+
+    </style>
+</head>
+<body>
+<iframe src="" frameborder="0" height="100%" class="myiframe" scrolling="yes"></iframe>
+<!--内容-->
+<div></div>
+<div id="container" style="top: 50px;"></div>
+<div id="mask" class="mask"></div>
+<div id="userDetail" class="userDetail"></div>
+
+<!-- the overlay element -->
+<script id="role" type="text/html">
+    {{each list as value}}
+     <ul class="item list-group">
+        <li class="list-group-item" id="view{{value}}">
+            {{each value.img as index i}}
+            {{if i==0}}
+            <img class="cd-trigger" onclick="showUserDetail('{{value.id}}')" src="{{index}}" />
+            {{else}}
+            <img src="{{index}}" style="display: none"/>
+            {{/if}}
+            {{/each}}
+        </li>
+        <li class="list-group-item">
+            <button onclick="msg_like('{{value.id}}')" type="button" class="btn btn-default btn-xs" title="赞"><span class="glyphicon glyphicon-thumbs-up"></span></button>
+            <button onclick="msg_unlike('{{value.id}}')" type="button" class="btn btn-default btn-xs" title="踩"><span class="glyphicon glyphicon-thumbs-down"></span></button>
+            <button onclick="msg_star('{{value.id}}',this)" type="button" class="btn btn-default btn-xs pull-right" title="收藏"><span class="glyphicon glyphicon-star-empty"></span></button>
+        </li>
+        <li class="list-group-item">
+            <div class="media">
+                <div class="media-left">
+                    <img onclick="addFriends()" class="media-object img-rounded cd-trigger" style="width: 30px; height: 30px;" src="{{value.user.headshow}}" />
+                </div>
+                <div class="media-body">
+                    <input type="hidden" id="id" value="{{value}}"/>
+                    <h5 class="media-heading">{{value.user.username}}</h5>
+                    {{if value.content.length<=50}}
+                    <p id="msg_p" style="font-size: small">
+                        {{value.content}}
+                    </p>
+                    <a id="msg_a" onclick="moreContent()" href="javascript:void(0)" class="msg_a">更多...</a>
+                    {{else}}
+                    <p style="font-size: small">
+                        {{value.content}}
+                    </p>
+
+                    {{/if}}
+                </div>
+            </div>
+        </li>
+    </ul>
+    {{/each}}
+</script>
+<th:block th:replace="/common::js2"></th:block>
+<script>
+    $('#container').waterfall({
+        itemCls: 'item',
+        fitWidth:false,
+        colWidth: 222,
+        gutterWidth: 15,
+        gutterHeight: 15,
+        maxCol:5,
+        checkImagesLoaded: false,
+        resizable:true,
+        isAnimated:true,
+        dataType: 'json',
+        path: function(page) {
+            return '/platform/getData?page='+page;
+        },
+        params:{
+            queryParams:{
+                type:"",
+                city:""
+            }
+        },
+        callbacks: {
+            loadingStart: function($loading) {
+                $loading.show();
+                //console.log('loading', 'start');
+            },
+            loadingFinished: function($loading, isBeyondMaxPage) {
+                if ( !isBeyondMaxPage ) {
+                    $loading.fadeOut();
+                    //console.log('loading finished');
+                } else {
+                    //console.log('loading isBeyondMaxPage');
+                    $loading.remove();
+                }
+            },
+            loadingError: function($message, xhr) {
+                $message.html('加载失败,请稍后重试');
+            },
+            /*
+            * 处理ajax返回数方法
+            * @param {String} data
+            */
+            renderData: function (data) {
+                if (data.success) {
+                    var htmlData = {
+                        list:data.rows
+                    };
+                    var html = template('role', htmlData);
+                    return html;
+                }else{
+                    $('#container').waterfall('pause', function() {
+                        $('#waterfall-message').html("<br><br><br><p style='color:#666;'>"+data.info+"</p>")
+                        //alert('no more data');
+                    });
+                }
+
+            }
+        },
+    });
+</script>
+</body>
+</html>

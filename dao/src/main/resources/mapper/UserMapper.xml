@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.task.dao.UserMapper">
+
+    <select id="getObjectById" resultType="com.task.pojo.User">
+    	SELECT * FROM sample WHERE id=#{id}
+	</select>
+
+    <insert id="addObject" parameterType="com.task.dao.UserMapper" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="username != null and username != ''">username,</if>
+            <if test="account != null and account != ''">account,</if>
+            <if test="password != null and password != ''">password,</if>
+            <if test="age != null and age != ''">age,</if>
+            <if test="sex != null and sex != ''">sex,</if>
+            <if test="email != null and email != ''">email,</if>
+            <if test="phone != null and phone != ''">phone,</if>
+            <if test="address != null and address != ''">address,</if>
+            <if test="headshow != null and headshow != ''">headshow,</if>
+            <if test="sign != null and sign != ''">sign,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="username != null and username != ''">#{username,jdbcType=VARCHAR},</if>
+            <if test="account != null and account != ''">#{account,jdbcType=VARCHAR},</if>
+            <if test="password != null and password != ''">#{password,jdbcType=VARCHAR},</if>
+            <if test="age != null and age != ''">#{age,jdbcType=INTEGER},</if>
+            <if test="sex != null and sex != ''">#{sex,jdbcType=INTEGER},</if>
+            <if test="email != null and email != ''">#{email,jdbcType=VARCHAR},</if>
+            <if test="phone != null and phone != ''">#{phone,jdbcType=VARCHAR},</if>
+            <if test="address != null and address != ''">#{address,jdbcType=VARCHAR},</if>
+            <if test="headshow != null and headshow != ''">#{headshow,jdbcType=VARCHAR},</if>
+            <if test="sign != null and sign != ''">#{sign,jdbcType=VARCHAR},</if>
+        </trim>
+    </insert>
+
+    <insert id="batchAddObject" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO Sample(name,age,sex) VALUES
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.name},#{item.age},#{item.sex})
+        </foreach>
+    </insert>
+
+    <select id="getObjectList" resultType="com.task.pojo.User">
+        SELECT * FROM user
+        <where>
+            <if test="username != null and username != ''">AND username=#{username,jdbcType=VARCHAR}</if>
+            <if test="account != null and account != ''">AND account=#{account,jdbcType=VARCHAR}</if>
+            <if test="password != null and password != ''">AND password=#{password,jdbcType=VARCHAR}</if>
+            <if test="email != null and email != ''">AND email=#{email,jdbcType=VARCHAR}</if>
+        </where>
+    </select>
+
+    <select id="findByObjectPageList" resultType="com.task.dao.UserMapper">
+        SELECT * FROM Sample
+        <where>
+            <if test="name != null and name != ''">AND name=#{name,jdbcType=VARCHAR}</if>
+            <if test="sex != null and sex != ''">AND sex=#{sex,jdbcType=VARCHAR}</if>
+            <if test="age != null and age != ''">AND age=#{age,jdbcType=INTEGER}</if>
+        </where>
+    </select>
+
+    <delete id="deleteObjectById" parameterType="com.task.dao.UserMapper">
+      DELETE FROM sample where id=#{id}
+    </delete>
+
+    <update id="updateObject" parameterType="com.task.dao.UserMapper">
+        UPDATE user
+        <set>
+            <if test="username != null and username != ''">username=#{username,jdbcType=VARCHAR},</if>
+            <if test="password != null and password != ''">password=#{password,jdbcType=VARCHAR},</if>
+            <if test="age != null and age != ''">age=#{age,jdbcType=INTEGER},</if>
+            <if test="sex != null and sex != ''">sex=#{sex,jdbcType=INTEGER},</if>
+            <if test="email != null and email != ''">email=#{email,jdbcType=VARCHAR},</if>
+            <if test="phone != null and phone != ''">phone=#{phone,jdbcType=VARCHAR},</if>
+            <if test="address != null and address != ''">address=#{address,jdbcType=VARCHAR},</if>
+            <if test="headshow != null and headshow != ''">headshow=#{headshow,jdbcType=VARCHAR},</if>
+            <if test="sign != null and sign != ''">sign=#{sign,jdbcType=VARCHAR},</if>
+        </set>
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <delete id="batchDeleteObject">
+        DELETE FROM sample where id in(
+        <foreach collection="list" index="index" item="item" separator=",">
+            #{item}
+        </foreach>
+        )
+    </delete>
+
+</mapper>

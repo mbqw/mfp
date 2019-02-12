@@ -1,0 +1,53 @@
+.userDetail{
+    display: none;
+
+    left: 35%;
+    top: 25%;
+    position: fixed;
+    width: 400px;
+    height: 400px;
+    z-index: 10;
+    background-color: white;
+    padding: 50px;
+    padding-bottom: 80px;
+    margin-top: 50px;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    border-radius: 10px;
+    min-width: 240px;
+}
+.mask {
+    position: absolute;
+    top: 0px;
+    filter: alpha(opacity=60);
+    background-color: #777;
+    z-index: 2;
+    left: 0px;
+    opacity:0.5;
+    -moz-opacity:0.5;
+}
+.myiframe{
+    position: fixed;
+    right: 0;
+    z-index: 9999;
+    display: none;
+    box-shadow: -20px 0 30px -1px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+}
+.cd-trigger:hover{
+    cursor: pointer;
+}
+.msg_a{
+    text-decoration: none;
+}
+.msg_a:hover{
+    cursor: pointer;
+    text-decoration:none;
+}
+.msg_a:link{
+    text-decoration:none;
+}
+.msg_a:visited{
+    text-decoration:none;
+}
+.msg_a:active{
+    text-decoration:none;
+}
