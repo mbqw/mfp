@@ -29,10 +29,7 @@ public class PlatformController extends BaseController {
     @Autowired
     private DynamicMsgService dynamicMsgService;
 
-    /**
-     * 跳转到主页
-     * @param modelMap
-     */
+    //跳转到主页
     @RequestMapping("/index/{id}")
     public ModelAndView index(ModelMap modelMap, @PathVariable Integer id){
         modelMap.addAttribute("id",id);
@@ -45,9 +42,7 @@ public class PlatformController extends BaseController {
         modelMap.addAttribute("id",id);
         return new ModelAndView("detail",modelMap);
     }
-    /**
-     * 获取数据
-     */
+    //获取数据
     @RequestMapping("/getData")
     public void getData(DataGridModel dataGridModel, HttpServletRequest request, HttpServletResponse response){
         PrintWriter out = super.getOut(response);
