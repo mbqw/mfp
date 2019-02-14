@@ -25,8 +25,8 @@
 <!--菜单-->
 <div class="content-menu">
     <ul>
-        <li th:onclick="addMsg()">发布</li>
-        <li>收藏</li>
+        <li onclick="addMsg()">发布</li>
+        <li onclick="userStars()">收藏</li>
         <li>主页</li>
         <li>个人资料</li>
     </ul>
@@ -35,31 +35,30 @@
 <div id="container" style="top: 20px;left: 50px;right: -50px"></div>
 <!--模态框-->
 <div id="mask" class="mask"></div>
-<!--弹窗-->
-<div id="userDetail" class="userDetail"></div>
 
 <!-- the overlay element -->
 <script id="role" type="text/html">
     {{each list as value}}
      <ul class="item list-group">
-        <li class="list-group-item" id="view{{value}}">
+        <li class="list-group-item" id="view{{value.id}}">
             {{each value.img as index i}}
             {{if i==0}}
-            <img class="cd-trigger" onclick="showUserDetail('{{value.id}}')" src="{{index}}" />
+            <img class="cd-trigger" onclick="viewPhoto('{{value.id}}')" src="{{index}}" layer-src="{{index}}"/>
             {{else}}
-            <img src="{{index}}" style="display: none"/>
+            <img src="{{index}}" layer-src="{{index}}" style="display: none"/>
             {{/if}}
             {{/each}}
         </li>
         <li class="list-group-item">
-            <button onclick="msg_like('{{value.id}}')" type="button" class="btn btn-default btn-xs" title="赞"><span class="glyphicon glyphicon-thumbs-up"></span></button>
-            <button onclick="msg_unlike('{{value.id}}')" type="button" class="btn btn-default btn-xs" title="踩"><span class="glyphicon glyphicon-thumbs-down"></span></button>
-            <button onclick="msg_star('{{value.id}}',this)" type="button" class="btn btn-default btn-xs pull-right" title="收藏"><span class="glyphicon glyphicon-star-empty"></span></button>
+            <button id="like{{value.id}}" onclick="msg_like('{{value.id}}')" type="button" class="btn btn-default btn-xs" title="{{value.ylike}}"><span class="glyphicon glyphicon-thumbs-up"></span></button>
+            <button id="unlike{{value.id}}" onclick="msg_unlike('{{value.id}}')" type="button" class="btn btn-default btn-xs" title="{{value.unlike}}"><span class="glyphicon glyphicon-thumbs-down"></span></button>
+            <span style="margin-left: 35px">1/{{value.img.length}}</span>
+            <button id="star{{value.id}}" onclick="msg_star('{{value.id}}','{{value.u_id}}',this)" type="button" class="btn btn-default btn-xs pull-right" title="{{value.star}}"><span class="glyphicon glyphicon-star-empty"></span></button>
         </li>
         <li class="list-group-item">
             <div class="media">
                 <div class="media-left">
-                    <img onclick="addFriends()" class="media-object img-rounded cd-trigger" style="width: 30px; height: 30px;" src="{{value.user.headshow}}" />
+                    <img onclick="showUserDetail('{{value.u_id}}')" class="media-object img-rounded cd-trigger" style="width: 30px; height: 30px;" src="{{value.user.headshow}}" />
                 </div>
                 <div class="media-body">
                     <input type="hidden" id="id" value="{{value}}"/>
@@ -72,7 +71,8 @@
                     <p style="font-size: small">
                         {{#value.content}}
                     </p>
-                    <a id="msg_a" onclick="moreContent()" href="javascript:void(0)" class="msg_a">更多...</a>
+                    <br>
+                    <a id="msg_a" onclick="moreContent('{{value.id}}')" href="javascript:void(0)" class="msg_a">更多...</a>
                     {{/if}}
                 </div>
             </div>

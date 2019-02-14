@@ -36,17 +36,11 @@ public class PlatformController extends BaseController {
         //User objectById = userService.getObjectById("");
         return new ModelAndView("platform",modelMap);
     }
-    //固定头
-    @RequestMapping("/head/{id}")
-    public ModelAndView head(ModelMap modelMap, @PathVariable Integer id){
-        modelMap.addAttribute("id",id);
-        return new ModelAndView("head",modelMap);
-    }
     //弹出到详情页
     @RequestMapping("/detail/{id}")
     public ModelAndView detail(ModelMap modelMap, @PathVariable Integer id){
         modelMap.addAttribute("id",id);
-        return new ModelAndView("detail",modelMap);
+        return new ModelAndView("/user/detail",modelMap);
     }
     //获取数据
     @RequestMapping("/getData")

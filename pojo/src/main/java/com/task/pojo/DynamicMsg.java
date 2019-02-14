@@ -13,6 +13,7 @@ public class DynamicMsg implements Serializable {
     private String[] img;
     private Integer ylike;
     private Integer unlike;
+    private Integer star;
     private Integer u_id;
     private String createTime;
     private User user;

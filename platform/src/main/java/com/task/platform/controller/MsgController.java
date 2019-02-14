@@ -35,7 +35,14 @@ public class MsgController extends BaseController{
     public ModelAndView toAdd(ModelMap modelMap, @PathVariable Integer id){
         modelMap.addAttribute("id",id);
         //User objectById = userService.getObjectById("");
-        return new ModelAndView("/add",modelMap);
+        return new ModelAndView("/msg/add",modelMap);
+    }
+    //动态详情
+    @RequestMapping("/list/{id}")
+    public ModelAndView detail(ModelMap modelMap, @PathVariable Integer id){
+        modelMap.addAttribute("id",id);
+        //User objectById = userService.getObjectById("");
+        return new ModelAndView("/msg/list",modelMap);
     }
     //上传文件
     @RequestMapping("/uploadImgs/{id}")
@@ -83,6 +90,37 @@ public class MsgController extends BaseController{
             }
             map.put("success", false);
             map.put("info", "发布动态失败");
+            e.printStackTrace();
+        }
+        out.print(super.objectToJson(map));
+    }
+    //获取发布的内容
+    @RequestMapping("/getContent")
+    public void getContent(HttpServletRequest request, HttpServletResponse response, Integer id){
+        PrintWriter out = super.getOut(response);
+        Map<String, Object> map = new HashMap<String, Object>();
+        try {
+            DynamicMsg dynamicMsg = dynamicMsgService.getObjectById(id);
+            map.put("success", true);
+            map.put("info", dynamicMsg.getContent());
+        } catch (Exception e) {
+            map.put("success", false);
+            map.put("info", "获取失败");
+            e.printStackTrace();
+        }
+        out.print(super.objectToJson(map));
+    }
+    //点赞或踩
+    @RequestMapping("/update")
+    public void islike(HttpServletRequest request, HttpServletResponse response, DynamicMsg msg){
+        PrintWriter out = super.getOut(response);
+        Map<String, Object> map = new HashMap<String, Object>();
+        try {
+            dynamicMsgService.updateObject(msg);
+            map.put("success", true);
+        } catch (Exception e) {
+            map.put("success", false);
+            map.put("info", "操作失败");
             e.printStackTrace();
         }
         out.print(super.objectToJson(map));
