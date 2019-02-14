@@ -11,15 +11,15 @@
     INSERT INTO u_dyn_msg
     <trim prefix="(" suffix=")" suffixOverrides=",">
         <if test="content != null and content != ''">content,</if>
-        <if test="img != null and img != ''">account,</if>
-        <if test="like != null and like != ''">like,</if>
+        <if test="img != null and img != ''">img,</if>
+        <if test="ylike != null and ylike != ''">ylike,</if>
         <if test="unlike != null and unlike != ''">unlike,</if>
         <if test="u_id != null and u_id != ''">u_id,</if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
         <if test="content != null and content != ''">#{content,jdbcType=VARCHAR},</if>
         <if test="img != null and img != ''">#{img,jdbcType=VARCHAR},</if>
-        <if test="like != null and like != ''">#{like,jdbcType=INTEGER},</if>
+        <if test="ylike != null and ylike != ''">#{ylike,jdbcType=INTEGER},</if>
         <if test="unlike != null and unlike != ''">#{unlike,jdbcType=INTEGER},</if>
         <if test="u_id != null and u_id != ''">#{u_id,jdbcType=INTEGER},</if>
     </trim>
@@ -46,7 +46,7 @@
         <result column="headshow" property="user.headshow"/>
     </resultMap>
     <select id="findByObjectPageList" resultMap="msg_user">
-        SELECT msg.id,SUBSTRING(msg.content,1,100)content,msg.img,msg.like,msg.unlike,msg.u_id,u.username,u.headshow
+        SELECT msg.id,SUBSTRING(msg.content,1,100)content,msg.img,msg.ylike,msg.unlike,msg.u_id,u.username,u.headshow
         FROM (SELECT * FROM u_dyn_msg ORDER BY createTime DESC) msg
         LEFT JOIN USER u
         ON u.id=msg.u_id

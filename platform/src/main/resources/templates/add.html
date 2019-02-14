@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="zh">
+<head>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <style>
+        body {
+            padding: 10px;
+            font-size: 14px;
+            background: #fff;
+            width: 95%;
+            margin: 0 auto;
+            line-height: 20px;
+        }
+        .layui-upload-img{
+            width: 92px;
+            height: 92px;
+            margin: 0 10px 10px 0;
+        }
+    </style>
+</head>
+<body>
+<form class="layui-form layui-form-pane" method="post" action="/msg/add" enctype="multipart/form-data">
+    <input type="hidden" id="u_id" name="u_id" th:value="${id}">
+
+    <div class="layui-form-item layui-form-text">
+        <div class="layui-input-block">
+            <textarea id="content" name="content" class="layui-textarea"></textarea>
+        </div>
+    </div>
+    <div class="layui-upload">
+        <button type="button" class="layui-btn" id="uploadImgs">
+            <i class="layui-icon">&#xe64a;</i>选择图片
+        </button>
+        <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;">
+            预览图：
+            <div class="layui-upload-list" id="demo2"></div>
+        </blockquote>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <div class="layui-input-block">
+            <button id="formSubmit" class="layui-btn" lay-submit lay-filter="*">
+                <i class="layui-icon">&#xe605;</i>立即发布
+            </button>
+        </div>
+    </div>
+</form>
+</body>
+<script src="/layui/layui.all.js"></script>
+<!--<script src="/js/jquery-2.1.1.min.js" type="text/javascript"></script>-->
+<script>
+    var imgArr=new Array();
+    layui.use(['upload','form','layedit'], function(){
+
+        var $ = layui.jquery;
+        var upload = layui.upload;
+        var form = layui.form;
+        var layedit = layui.layedit;
+
+        var index = layedit.build('content',{
+            height: 180,
+            hideTool:[
+                'image'
+            ]
+        }); //建立编辑器
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#uploadImgs' //绑定元素
+            ,url: '/msg/uploadImgs/'+$("#u_id").val() //上传接口
+            ,accept:'images'
+            ,acceptMime:'image/*'
+            ,exts:'jpg|png'
+            ,auto:false
+            ,bindAction:"#formSubmit"
+            ,multiple:true
+            ,number:4
+            ,choose:function (obj) {
+                //预读本地文件示例，不支持ie8
+                obj.preview(function(index, file, result){
+                    var flag=1;
+                    if ($('#demo2 img').length<4){
+                        $('#demo2 img').each(function () {
+                            if ($(this).attr("alt")==file.name){
+                                flag=0;
+                            }
+                        });
+                        if (flag==1){
+                            $('#demo2').append('<img src="'+ result +'" alt="'+ file.name +'" class="layui-upload-img">')
+                        } else{
+                            layer.msg('选择的文件重复', {icon: 5});
+                        }
+                    } else{
+                        layer.msg('同时最多只能上传的数量为:4', {icon: 5});
+                    }
+                });
+            }
+            ,done:function (res, index, upload) {
+                //上传成功回调
+                if (res.success){
+                    imgArr.push(res.info);
+                }
+            }
+            ,allDone: function(obj){ //当文件全部被提交后，才触发
+                layedit.sync(index)
+                var u_id = $("#u_id").val();
+                var content =layedit.getContent(index);
+                $.ajax({
+                    type:"POST",
+                    data:{
+                        "u_id":u_id,
+                        "content":content,
+                        "img":imgArr.join(",")
+                    },
+                    dataType:"JSON",
+                    url:'/msg/add',
+                    success:function (data) {
+                        if (data.success){
+                            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                            parent.layer.close(index);
+                        } else{
+                            imgArr=[];
+                            layer.msg(data.info, {icon: 5});
+                        }
+                    }
+                });
+            }
+        });
+        form.on('submit(*)', function(obj){
+            if (layedit.getContent(index)==''){
+                layer.msg('内容不能为空', {icon: 5});
+                return false;
+            }
+            if ($('#demo2 img').length==0){
+                layer.msg('请选择图片', {icon: 5});
+                return false;
+            }
+            return false;
+        });
+    })
+</script>
+</html>

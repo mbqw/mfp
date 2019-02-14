@@ -66,11 +66,11 @@
                     <h5 class="media-heading">{{value.user.username}}</h5>
                     {{if value.content.length<100}}
                     <p id="msg_p" style="font-size: small">
-                        {{value.content}}
+                        {{#value.content}}
                     </p>
                     {{else}}
                     <p style="font-size: small">
-                        {{value.content}}
+                        {{#value.content}}
                     </p>
                     <a id="msg_a" onclick="moreContent()" href="javascript:void(0)" class="msg_a">更多...</a>
                     {{/if}}
