@@ -21,20 +21,17 @@
 </head>
 <body>
 <input type="hidden" id="user_id" th:value="${id}">
-<iframe src="" frameborder="0" height="100%" class="myiframe" scrolling="yes" ></iframe>
 <!--菜单-->
 <div class="content-menu">
     <ul>
         <li onclick="addMsg()">发布</li>
         <li onclick="userStars()">收藏</li>
-        <li>主页</li>
-        <li>个人资料</li>
+        <li onclick="location.reload(true);">主页</li>
+        <li onclick="toDetail()">个人</li>
     </ul>
 </div>
 <!--内容-->
 <div id="container" style="top: 20px;left: 50px;right: -50px"></div>
-<!--模态框-->
-<div id="mask" class="mask"></div>
 
 <!-- the overlay element -->
 <script id="role" type="text/html">
@@ -53,7 +50,7 @@
             <button id="like{{value.id}}" onclick="msg_like('{{value.id}}')" type="button" class="btn btn-default btn-xs" title="{{value.ylike}}"><span class="glyphicon glyphicon-thumbs-up"></span></button>
             <button id="unlike{{value.id}}" onclick="msg_unlike('{{value.id}}')" type="button" class="btn btn-default btn-xs" title="{{value.unlike}}"><span class="glyphicon glyphicon-thumbs-down"></span></button>
             <span style="margin-left: 35px">1/{{value.img.length}}</span>
-            <button id="star{{value.id}}" onclick="msg_star('{{value.id}}','{{value.u_id}}',this)" type="button" class="btn btn-default btn-xs pull-right" title="{{value.star}}"><span class="glyphicon glyphicon-star-empty"></span></button>
+            <button id="star{{value.id}}" onclick="msg_star('{{value.id}}',this)" type="button" class="btn btn-default btn-xs pull-right" title="{{value.star}}"><span class="glyphicon glyphicon-star-empty"></span></button>
         </li>
         <li class="list-group-item">
             <div class="media">

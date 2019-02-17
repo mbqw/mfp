@@ -5,7 +5,7 @@
 ,"data": [{
   "id": "10001"
 ,"username": "杜甫"
-,"email": "xianxin@layui.com"
+,"email": "<em>xianxin@layui.com</em>"
 ,"sex": "男"
 ,"city": "浙江杭州"
 ,"sign": "点击此处，显示更多。当内容超出时，点击单元格会自动显示更多内容。"

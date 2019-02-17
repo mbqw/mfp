@@ -4,7 +4,7 @@
 <mapper namespace="com.task.dao.UserMapper">
 
     <select id="getObjectById" resultType="com.task.pojo.User">
-    	SELECT * FROM sample WHERE id=#{id}
+    	SELECT * FROM user WHERE id=#{id}
 	</select>
 
     <insert id="addObject" parameterType="com.task.dao.UserMapper" useGeneratedKeys="true" keyProperty="id">

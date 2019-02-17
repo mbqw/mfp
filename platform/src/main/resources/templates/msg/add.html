@@ -51,12 +51,10 @@
 <script>
     var imgArr=new Array();
     layui.use(['upload','form','layedit'], function(){
-
         var $ = layui.jquery;
         var upload = layui.upload;
         var form = layui.form;
         var layedit = layui.layedit;
-
         var index = layedit.build('content',{
             height: 180,
             hideTool:[
@@ -79,6 +77,8 @@
                 obj.preview(function(index, file, result){
                     var flag=1;
                     if ($('#demo2 img').length<4){
+                        //每次选择的文件追加到文件列表
+                        var files = this.files = obj.pushFile();
                         $('#demo2 img').each(function () {
                             if ($(this).attr("alt")==file.name){
                                 flag=0;
@@ -117,6 +117,7 @@
                         if (data.success){
                             var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                             parent.layer.close(index);
+                            parent.location.href="/platform/index/"+u_id;
                         } else{
                             imgArr=[];
                             layer.msg(data.info, {icon: 5});

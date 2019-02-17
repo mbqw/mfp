@@ -69,7 +69,7 @@ function msg_unlike(id) {
     });
 }
 //标记为收藏
-function msg_star(id,u_id,t) {
+function msg_star(id,t) {
     var star=0;
     if ($(t).children("span").hasClass("glyphicon-star")) {
         star =-1;
@@ -80,7 +80,7 @@ function msg_star(id,u_id,t) {
         type:"POST",
         data:{
             id:id,
-            u_id:u_id,
+            u_id:$("#user_id").val(),
             star:star
         },
         dataType:"JSON",
@@ -90,9 +90,17 @@ function msg_star(id,u_id,t) {
                 if (star ==1){
                     $(t).children("span").removeClass("glyphicon-star-empty");
                     $(t).children("span").addClass("glyphicon-star");
+                    layer.tips('已收藏', '#star'+id,{
+                        tips: [1, '#00bfff'],
+                        time:1000
+                    });
                 } else{
                     $(t).children("span").removeClass("glyphicon-star");
                     $(t).children("span").addClass("glyphicon-star-empty");
+                    layer.tips('取消收藏', '#star'+id,{
+                        tips: [1, '#00bfff'],
+                        time:1000
+                    });
                 }
             } else{
                 layer.msg(data.info, function(){
@@ -158,6 +166,18 @@ function userStars() {
         area: ['800px','600px'],
         fixed: false, //不固定
         maxmin: true,
-        content: '/msg/list/'+$("#user_id").val()
+        content: '/msg/toList/'+$("#user_id").val()
+    });
+}
+function toDetail() {
+    layer.open({
+        type: 2,
+        title:"用户信息",
+        scrollbar:false,
+        anim: 5,
+        type: 2,
+        area: ['500px','100%'],
+        fixed: false, //不固定
+        content: '/user/toDetail/'+$("#user_id").val()
     });
 }

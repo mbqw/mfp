@@ -36,12 +36,10 @@
     </select>
 
     <select id="findByObjectPageList" resultType="com.task.pojo.Star">
-        SELECT * FROM Sample
-        <where>
-            <if test="name != null and name != ''">AND name=#{name,jdbcType=VARCHAR}</if>
-            <if test="sex != null and sex != ''">AND sex=#{sex,jdbcType=VARCHAR}</if>
-            <if test="age != null and age != ''">AND age=#{age,jdbcType=INTEGER}</if>
-        </where>
+        SELECT m.* FROM `u_m_star` s
+        INNER JOIN `u_dyn_msg` m
+        WHERE s.`m_id` = m.`id`
+        AND s.`u_id` = #{u_id,jdbcType=INTEGER}
     </select>
 
     <delete id="deleteObjectById" parameterType="com.task.pojo.Star">

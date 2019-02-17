@@ -1,7 +1,13 @@
 package com.task.platform.controller;
 
+import com.github.miemiedev.mybatis.paginator.domain.Order;
+import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
+import com.github.miemiedev.mybatis.paginator.domain.PageList;
+import com.task.pojo.DataGridModel;
 import com.task.pojo.DynamicMsg;
+import com.task.pojo.Star;
 import com.task.service.DynamicMsgService;
+import com.task.service.StarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -27,9 +33,11 @@ import java.util.UUID;
 public class MsgController extends BaseController{
     @Autowired
     private DynamicMsgService dynamicMsgService;
-
+    //静态资源路径
     @Value(value = "${upload_images_path}")
     private String upload_images_path;
+    @Autowired
+    private StarService starService;
     //跳转到主页
     @RequestMapping("/toAdd/{id}")
     public ModelAndView toAdd(ModelMap modelMap, @PathVariable Integer id){
@@ -38,7 +46,7 @@ public class MsgController extends BaseController{
         return new ModelAndView("/msg/add",modelMap);
     }
     //动态详情
-    @RequestMapping("/list/{id}")
+    @RequestMapping("/toList/{id}")
     public ModelAndView detail(ModelMap modelMap, @PathVariable Integer id){
         modelMap.addAttribute("id",id);
         //User objectById = userService.getObjectById("");
@@ -118,6 +126,7 @@ public class MsgController extends BaseController{
         try {
             dynamicMsgService.updateObject(msg);
             map.put("success", true);
+            map.put("info", "操作成功");
         } catch (Exception e) {
             map.put("success", false);
             map.put("info", "操作失败");
@@ -125,5 +134,30 @@ public class MsgController extends BaseController{
         }
         out.print(super.objectToJson(map));
     }
-
+    //获取已收藏分页数据
+    @RequestMapping("/starList")
+    public void starList(DataGridModel dataGridModel, HttpServletRequest request, HttpServletResponse response){
+        PrintWriter out = super.getOut(response);
+        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> params = dataGridModel.getQueryParams();
+        try {
+            PageBounds pageBounds = new PageBounds(dataGridModel.getPage(),dataGridModel.getRows(), Order.formString(dataGridModel.getSort() + "." + dataGridModel.getOrder()));
+            PageList<DynamicMsg> pageList = dynamicMsgService.findStarMsgPageList(params, pageBounds);
+            if (pageList != null) {
+                map.put("count", pageList.getPaginator().getTotalCount());
+                map.put("data", pageList);
+                if(pageList.size() == 0){
+                    map.put("code",1);
+                    map.put("msg","无数据");
+                } else {
+                    map.put("code",0);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("code", 1);
+            map.put("msg", "获取数据失败!");
+        }
+        out.print(super.objectToJson(map));
+    }
 }
