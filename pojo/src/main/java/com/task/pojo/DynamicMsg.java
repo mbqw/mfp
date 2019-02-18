@@ -17,5 +17,5 @@ public class DynamicMsg implements Serializable {
     private Integer u_id;
     private String createTime;
     private User user;
-
+    private Integer starId;
 }

@@ -118,7 +118,7 @@ public class MsgController extends BaseController{
         }
         out.print(super.objectToJson(map));
     }
-    //点赞或踩
+    //点赞或踩或收藏
     @RequestMapping("/update")
     public void islike(HttpServletRequest request, HttpServletResponse response, DynamicMsg msg){
         PrintWriter out = super.getOut(response);

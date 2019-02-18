@@ -27,7 +27,7 @@
         <li onclick="addMsg()">发布</li>
         <li onclick="userStars()">收藏</li>
         <li onclick="location.reload(true);">主页</li>
-        <li onclick="toDetail()">个人</li>
+        <li th:onclick="|toDetail(${id})|">个人</li>
     </ul>
 </div>
 <!--内容-->
@@ -50,12 +50,18 @@
             <button id="like{{value.id}}" onclick="msg_like('{{value.id}}')" type="button" class="btn btn-default btn-xs" title="{{value.ylike}}"><span class="glyphicon glyphicon-thumbs-up"></span></button>
             <button id="unlike{{value.id}}" onclick="msg_unlike('{{value.id}}')" type="button" class="btn btn-default btn-xs" title="{{value.unlike}}"><span class="glyphicon glyphicon-thumbs-down"></span></button>
             <span style="margin-left: 35px">1/{{value.img.length}}</span>
-            <button id="star{{value.id}}" onclick="msg_star('{{value.id}}',this)" type="button" class="btn btn-default btn-xs pull-right" title="{{value.star}}"><span class="glyphicon glyphicon-star-empty"></span></button>
+            <button id="star{{value.id}}" onclick="msg_star('{{value.id}}',this)" type="button" class="btn btn-default btn-xs pull-right" title="{{value.star}}">
+            {{if value.starId != null}}
+            <span class="glyphicon glyphicon-star"></span></button>
+            {{else}}
+            <span class="glyphicon glyphicon-star-empty"></span>
+            {{/if}}
+            </button>
         </li>
         <li class="list-group-item">
             <div class="media">
                 <div class="media-left">
-                    <img onclick="showUserDetail('{{value.u_id}}')" class="media-object img-rounded cd-trigger" style="width: 30px; height: 30px;" src="{{value.user.headshow}}" />
+                    <img onclick="toDetail('{{value.u_id}}')" class="media-object img-rounded cd-trigger" style="width: 30px; height: 30px;" src="{{value.user.headshow}}" />
                 </div>
                 <div class="media-body">
                     <input type="hidden" id="id" value="{{value}}"/>
@@ -95,8 +101,7 @@
         },
         params:{
             queryParams:{
-                type:"",
-                city:""
+                user_id:$("#user_id").val()
             }
         },
         callbacks: {

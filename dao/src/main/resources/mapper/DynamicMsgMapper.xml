@@ -46,10 +46,12 @@
         <result column="headshow" property="user.headshow"/>
     </resultMap>
     <select id="findByObjectPageList" resultMap="msg_user">
-        SELECT msg.id,SUBSTRING(msg.content,1,300)content,msg.img,msg.ylike,msg.unlike,msg.u_id,u.username,u.headshow
+        SELECT msg.id,SUBSTRING(msg.content,1,300)content,msg.img,msg.ylike,msg.unlike,msg.u_id,u.username,u.headshow,s.id starId
         FROM (SELECT * FROM u_dyn_msg ORDER BY createTime DESC) msg
-        inner JOIN USER u
+        INNER JOIN USER u
         ON u.id=msg.u_id
+        LEFT JOIN (SELECT * FROM u_m_star WHERE u_id = #{user_id,jdbcType=INTEGER}) s
+        ON msg.id = s.m_id
         <where>
             <if test="u_id != null and u_id != ''">AND msg.u_id=#{u_id,jdbcType=INTEGER}</if>
         </where>
