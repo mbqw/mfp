@@ -166,7 +166,11 @@ function userStars() {
         area: ['800px','600px'],
         fixed: false, //不固定
         maxmin: true,
-        content: '/msg/toList/'+$("#user_id").val()
+        content: '/msg/toList/'+$("#user_id").val(),
+        cancel: function(index, layero){
+            layer.close(index);
+            window.location.href="/platform/index/"+$("#user_id").val();
+        }
     });
 }
 //user详情页
@@ -179,30 +183,25 @@ function toDetail(u_id) {
         type: 2,
         area: ['500px','100%'],
         fixed: false, //不固定
+        resize:false,
         content: '/user/toDetail/'+$("#user_id").val()+'/'+u_id,
-        /*cancel: function(index, layero){
+        cancel: function(index, layero){
             layer.close(index);
-            location.reload(true);
-            return false;
-        }*/
+            window.location.href="/platform/index/"+$("#user_id").val();
+        }
     });
 }
 //换头像
-function changeHeadshow(u_id) {
-    layer.open({
+function changeHeadshow(user_id) {
+    var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+    parent.layer.close(index);
+    parent.layer.open({
         type: 2,
         title:"更改头像",
         scrollbar:false,
-        anim: 5,
-        type: 2,
-        area: ['500px','100%'],
-        fixed: false, //不固定
-        content: '#changeHeadshow'
-        /*cancel: function(index, layero){
-            layer.close(index);
-            location.reload(true);
-            return false;
-        }*/
+        area: ['650px','550px'],
+        content: '/user/toHeadshow/'+user_id,
+
     });
 }
 //修改资料
@@ -214,7 +213,6 @@ function toUpdate(u_id) {
         title:"修改资料",
         scrollbar:false,
         anim: 5,
-        type: 2,
         area: ['400px','550px'],
         fixed: false, //不固定
         content: '/user/toUpdate/'+u_id

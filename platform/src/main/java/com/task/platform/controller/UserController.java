@@ -11,6 +11,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +21,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/user")
@@ -32,7 +35,6 @@ public class UserController extends BaseController{
     @RequestMapping("/toDetail/{user_id}/{u_id}")
     public ModelAndView index(ModelMap modelMap, @PathVariable Integer user_id,@PathVariable Integer u_id){
         modelMap.addAttribute("user_id",user_id);
-        modelMap.addAttribute("u_id",u_id);
         User user = userService.getObjectById(u_id);
         modelMap.addAttribute("user",user);
         return new ModelAndView("user/detail",modelMap);
@@ -46,7 +48,7 @@ public class UserController extends BaseController{
     }
     //更新
     @RequestMapping("/update")
-    public void islike(HttpServletRequest request, HttpServletResponse response, User user){
+    public void update(HttpServletRequest request, HttpServletResponse response, User user){
         PrintWriter out = super.getOut(response);
         Map<String, Object> map = new HashMap<String, Object>();
         try {
@@ -60,5 +62,40 @@ public class UserController extends BaseController{
         }
         out.print(super.objectToJson(map));
     }
-
+    //跳转到更换头像页面
+    @RequestMapping("/toHeadshow/{user_id}")
+    public ModelAndView toHeadshow(ModelMap modelMap, @PathVariable Integer user_id){
+        modelMap.addAttribute("user_id",user_id);
+        return new ModelAndView("user/headshow",modelMap);
+    }
+    //更换头像
+    @RequestMapping("/headshow")
+    public void headshow(HttpServletRequest request, HttpServletResponse response,@RequestParam("imagefile") MultipartFile file,Integer id){
+        PrintWriter out = super.getOut(response);
+        Map<String, Object> map = new HashMap<String, Object>();
+        try {
+            if (!file.isEmpty()){
+                File dir = new File(upload_images_path+"head\\");
+                if (!dir.exists()){
+                    dir.mkdir();
+                }
+                String fileName=id+".png";
+                file.transferTo(new File(dir,fileName));
+                User user = new User();
+                user.setId(id);
+                user.setHeadshow("\\head\\"+fileName);
+                userService.updateObject(user);
+                map.put("success", true);
+                map.put("info","\\head\\"+fileName);
+            }else{
+                map.put("success", false);
+                map.put("info", "文件为空");
+            }
+        } catch (Exception e) {
+            map.put("success", false);
+            map.put("info", "操作失败");
+            e.printStackTrace();
+        }
+        out.print(super.objectToJson(map));
+    }
 }

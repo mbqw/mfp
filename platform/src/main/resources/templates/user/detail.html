@@ -122,11 +122,13 @@
 </head>
 <body>
 <input type="hidden" id="user_id" th:value="${user_id}">
-<input type="hidden" id="u_id" th:value="${u_id}">
+<input type="hidden" id="u_id" th:value="${user.id}">
 <div class="demo">
     <div  align="center" style="margin: 10px 0 20px">
         <br>
-        <img class="headshow" th:src="${user.headshow}" alt=" ">
+        <img th:if="${user.id == user_id}" th:onclick="|changeHeadshow(${user.id})|" class="headshow" th:src="${user.headshow}" alt="头像" style="width:64px;border-radius:64px;">
+        <img th:if="${user.id != user_id}" class="headshow" th:src="${user.headshow}" alt=" " style="width:64px;border-radius:64px;">
+        <br>
         <br>
         <span>[[${user.username}]]</span>
         <br>
@@ -163,7 +165,7 @@
                     </tbody>
                 </table>
                 <div align="center" style="margin-top: 40px">
-                    <button th:if="${u_id == user_id}" class="layui-btn layui-btn-sm" style="background-color: #692f6c" th:onclick="|toUpdate(${u_id})|">修改资料</button>
+                    <button th:if="${user.id == user_id}" class="layui-btn layui-btn-sm" style="background-color: #692f6c" th:onclick="|toUpdate(${user.id})|">修改资料</button>
                 </div>
             </div>
         </div>
@@ -199,7 +201,7 @@
         <li class="list-group-item">
             <div class="media">
                 <div class="media-left">
-                    <img class="media-object img-rounded cd-trigger" style="width: 30px; height: 30px;" src="{{value.user.headshow}}" />
+                    <img class="media-object img-rounded cd-trigger" style="width: 30px; height: 30px;border-radius:30px;" src="{{value.user.headshow}}" />
                 </div>
                 <div class="media-body">
                     <h5 class="media-heading">{{value.user.username}}</h5>
