@@ -1,27 +1,4 @@
-$(function () {
 
-})
-//遮罩层
-$("#mask").click(function () {
-    $("#mask").fadeOut(500);
-    $(".myiframe").fadeOut(500);
-    $("#userDetail").fadeOut(500);
-    $(document).unbind("scroll");
-});
-//遮罩层
-function showMask() {
-    var tops = $(document).scrollTop();//当页面滚动时，把当前距离赋值给页面，这样保持页面滚动条不动
-    $(document).bind("scroll",function (){$(document).scrollTop(tops); });
-    $("#mask").css("height","100%");
-    $("#mask").css("width","100%");
-    $("#mask").fadeIn(500);
-}
-//用户详情
-function showUserDetail(id) {
-    $(".myiframe").attr("src","/platform/detail/"+id);
-    showMask();
-    $(".myiframe").fadeIn(500);
-}
 //喜欢
 function msg_like(id) {
     $.ajax({
@@ -110,6 +87,36 @@ function msg_star(id,t) {
     });
 }
 
+function toCommont(id) {
+
+}
+
+//查看评论
+function msg_comment(id) {
+    $.ajax({
+        type:"POST",
+        data:{
+            id:id
+        },
+        dataType:"JSON",
+        url:'/msg/getComment',
+        success:function (data) {
+            if (data.success){
+                layer.open({
+                    type: 1,
+                    title: false,
+                    closeBtn: 0,
+                    shadeClose: true,
+                    skin: 'contentHtml',
+                    content: "<div style='padding: 20px'>"+data.info+"</div>"
+                });
+            } else{
+                layer.msg(data.info, function(){
+                });
+            }
+        }
+    });
+}
 //查看照片
 function viewPhoto(id) {
     layer.photos({
@@ -128,7 +135,7 @@ function moreContent(id) {
         url:'/msg/getContent',
         success:function (data) {
             if (data.success){
-                layer.open({
+                parent.layer.open({
                     type: 1,
                     title: false,
                     closeBtn: 0,

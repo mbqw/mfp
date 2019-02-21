@@ -1,14 +1,11 @@
 package com.task.platform.controller;
 
-import com.task.pojo.DynamicMsg;
 import com.task.pojo.User;
 import com.task.service.UserService;
-import org.apache.commons.beanutils.BeanMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,7 +18,6 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @Controller
 @RequestMapping("/user")
@@ -45,6 +41,13 @@ public class UserController extends BaseController{
         User user = userService.getObjectById(u_id);
         modelMap.addAttribute("user",user);
         return new ModelAndView("user/update",modelMap);
+    }
+    //跳转到聊天页面
+    @RequestMapping("/chat/{user_id}")
+    public ModelAndView chat(ModelMap modelMap, @PathVariable Integer user_id){
+        User user = userService.getObjectById(user_id);
+        modelMap.addAttribute("user",user);
+        return new ModelAndView("user/chat2",modelMap);
     }
     //更新
     @RequestMapping("/update")

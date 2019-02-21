@@ -49,14 +49,16 @@
         <li class="list-group-item">
             <button id="like{{value.id}}" onclick="msg_like('{{value.id}}')" type="button" class="btn btn-default btn-xs" title="{{value.ylike}}"><span class="glyphicon glyphicon-thumbs-up"></span></button>
             <button id="unlike{{value.id}}" onclick="msg_unlike('{{value.id}}')" type="button" class="btn btn-default btn-xs" title="{{value.unlike}}"><span class="glyphicon glyphicon-thumbs-down"></span></button>
-            <span style="margin-left: 35px">1/{{value.img.length}}</span>
-            <button id="star{{value.id}}" onclick="msg_star('{{value.id}}',this)" type="button" class="btn btn-default btn-xs pull-right" title="{{value.star}}">
-            {{if value.starId != null}}
-            <span class="glyphicon glyphicon-star"></span></button>
+            <span style="margin-left: 30px">1/{{value.img.length}}</span>
+            <button id="comment{{value.id}}" onclick="msg_comment('{{value.id}}')" type="button" class="btn btn-default btn-xs pull-right" title="评论" style="margin-left: 4px"><span class="glyphicon glyphicon-comment"></span></button>
+            <button id="star{{value.id}}" onclick="msg_star('{{value.id}}',this)" type="button" class="btn btn-default btn-xs pull-right" title="{{value.star}}" >
+                {{if value.starId != null}}
+                <span class="glyphicon glyphicon-star"></span></button>
             {{else}}
             <span class="glyphicon glyphicon-star-empty"></span>
             {{/if}}
             </button>
+
         </li>
         <li class="list-group-item">
             <div class="media">
@@ -143,6 +145,60 @@
         },
     });
 
+</script>
+<script>
+    layui.use('layim', function(){
+        var layim = layui.layim;
+
+        //演示自动回复
+        var autoReplay = [
+            '您好，我现在有事不在，一会再和您联系。',
+        ];
+
+        //基础配置
+        layim.config({
+            //初始化接口
+            init: {
+                url: '/getList.json'
+                ,data: {}
+            }
+            //查看群员接口
+            ,members: {
+                url: '/getMembers.json'
+                ,data: {}
+            }
+
+            ,uploadImage: {
+                url: '' //（返回的数据格式见下文）
+                ,type: '' //默认post
+            }
+            ,uploadFile: {
+                url: '' //（返回的数据格式见下文）
+                ,type: '' //默认post
+            }
+            //扩展工具栏
+            /*,tool: [{
+                alias: 'code'
+                ,title: '代码'
+                ,icon: '&#xe64e;'
+            }]*/
+            ,title: '开始聊天' //自定义主面板最小化时的标题
+            ,initSkin: '3.jpg' //1-5 设置初始背景
+            ,notice: true //是否开启桌面消息提醒，默认false
+            ,min:true //用于设定主面板是否在页面打开时，始终最小化展现
+            ,isAudio:true //开启聊天工具栏音频
+            ,isVideo:true //开启聊天工具栏视频
+            ,msgbox: '/layui/css/modules/layim/html/msgbox.html' //消息盒子页面地址，若不开启，剔除该项即可
+            ,find: '/layui/css/modules/layim/html/find.html' //发现页面地址，若不开启，剔除该项即可
+            ,chatLog: '/layui/css/modules/layim/html/chatlog.html' //聊天记录页面地址，若不开启，剔除该项即可
+            /*,copyright:true*/
+        });
+
+        $('.site-demo-layim').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
 </script>
 </body>
 </html>

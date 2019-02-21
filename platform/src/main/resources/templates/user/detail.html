@@ -171,9 +171,6 @@
         </div>
     </div>
 </div>
-<script id="changeHeadshow" type="text/html">
-    aaaaaaaaaaaaaaaaaaaa
-</script>
 <script id="role" type="text/html">
     {{each list as value}}
     <ul class="item list-group" style="width: 430px">
@@ -224,8 +221,11 @@
 </script>
 <th:block th:replace="/common::js2"></th:block>
 <script th:inline="none">
+    var layer ;
     var table = layui.table;
-
+    layui.use('layer', function(){
+        layer = layui.layer;
+    });
     //转换静态表格
     table.init('test', {
 

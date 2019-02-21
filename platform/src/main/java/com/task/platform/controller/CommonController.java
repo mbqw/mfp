@@ -1,12 +1,15 @@
 package com.task.platform.controller;
 
 import com.task.common.MD5Utils;
+import com.task.common.MailUtils;
 import com.task.pojo.User;
 import com.task.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -90,7 +93,8 @@ public class CommonController extends BaseController {
      * @param user
      */
     @RequestMapping("/checkPE")
-    public void checkPE(HttpServletResponse response, User user){
+    public void checkPE(HttpServletRequest request, HttpServletResponse response, User user){
+
         PrintWriter out = super.getOut(response);
         Map<String, Object> map = new HashMap<String, Object>();
         try {
@@ -98,6 +102,8 @@ public class CommonController extends BaseController {
             if (userList!=null &&userList.size()>0){
                 map.put("success", true);
                 map.put("id", userList.get(0).getId());
+                String key = MailUtils.sendKey(user.getEmail());
+                request.getSession().setAttribute("key",key);
             } else{
                 map.put("success", false);
                 map.put("info", "账号不存在");
@@ -115,11 +121,12 @@ public class CommonController extends BaseController {
      * @param key
      */
     @RequestMapping("/resetPW")
-    public void resetPW(HttpServletResponse response, User user,String key){
+    public void resetPW(HttpServletRequest request,HttpServletResponse response, User user,String key){
         PrintWriter out = super.getOut(response);
         Map<String, Object> map = new HashMap<String, Object>();
         try {
-            if ("qwer".equals(key)){
+            String sessionKey = (String) request.getSession().getAttribute("key");
+            if (sessionKey.equals(key)){
                 try {
                     user.setPassword(MD5Utils.getMd5Str(user.getPassword()));
                     userService.updateObject(user);
