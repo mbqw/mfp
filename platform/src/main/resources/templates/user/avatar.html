@@ -3,7 +3,7 @@
 <html>
 <head>
     <link rel="stylesheet" href="/layui/css/layui.css">
-    <link rel="stylesheet" href="/css/platform/headshow.css">
+    <link rel="stylesheet" href="/css/platform/avatar.css">
 </head>
 <body>
 <input type="hidden" id="user_id" th:value="${user_id}">
@@ -68,7 +68,7 @@
             formdata.append("imagefile", img);
             formdata.append("id",$("#user_id").val());
             $.ajax({
-                url:"/user/headshow",
+                url:"/user/avatar",
                 data: formdata,
                 type:"post",
                 contentType: false,

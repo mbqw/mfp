@@ -43,10 +43,10 @@
     </select>
     <resultMap id="msg_user" type="com.task.pojo.DynamicMsg">
         <result column="username" property="user.username"/>
-        <result column="headshow" property="user.headshow"/>
+        <result column="avatar" property="user.avatar"/>
     </resultMap>
     <select id="findByObjectPageList" resultMap="msg_user">
-        SELECT msg.id,SUBSTRING(msg.content,1,300)content,msg.img,msg.ylike,msg.unlike,msg.u_id,u.username,u.headshow,s.id starId
+        SELECT msg.id,SUBSTRING(msg.content,1,300)content,msg.img,msg.ylike,msg.unlike,msg.u_id,u.username,u.avatar,s.id starId
         FROM (SELECT * FROM u_dyn_msg ORDER BY createTime DESC) msg
         INNER JOIN USER u
         ON u.id=msg.u_id
@@ -58,7 +58,7 @@
     </select>
 
     <select id="findStarMsgPageList" resultMap="msg_user">
-        SELECT m.*,u.`username`,u.`headshow` FROM `u_m_star` s
+        SELECT m.*,u.`username`,u.`avatar` FROM `u_m_star` s
         INNER JOIN (SELECT * FROM u_dyn_msg ORDER BY createTime DESC) m
         ON m.`id` = s.`m_id`
         INNER JOIN USER u

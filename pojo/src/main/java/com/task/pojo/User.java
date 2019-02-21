@@ -15,7 +15,7 @@ public class User {
     private String email;
     private String phone;
     private String address;
-    private String headshow;
+    private String avatar;
     private String sign;
     private List<DynamicMsg> dynamicMsgs;
 

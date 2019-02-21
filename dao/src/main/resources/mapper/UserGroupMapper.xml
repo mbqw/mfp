@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.task.dao.UserGroupMapper">
+    
+    
+    <resultMap id="group_members" type="com.task.pojo.UserGroup">
+        <id column="id" property="id"/>
+        <result column="groupname" property="groupname"/>
+        <result column="avatar" property="avatar"/>
+        <result column="u_id" property="u_id"/>
+
+        <collection property="list"  ofType="com.task.pojo.User">
+            <id column="uid" property="id"/>
+            <result column="username" property="username"/>
+            <result column="uavatar" property="avatar"/>
+            <result column="sign" property="sign"/>
+        </collection>
+    </resultMap>
+
+    <select id="getFriendsById" resultMap="group_members">
+    	SELECT g.*,u.id uid,u.username,u.avatar uavatar,u.sign FROM u_group g
+        LEFT JOIN g_members m
+        ON m.group_id = g.id
+        LEFT JOIN USER u
+        ON m.user_id=u.id
+        WHERE g.u_id = #{id}
+	</select>
+    <select id="getGroupById" resultType="com.task.pojo.UserGroup">
+    	SELECT g.* FROM u_group g
+        INNER JOIN g_members m
+        ON m.group_id = g.id
+        WHERE m.`user_id` = #{id} AND g.u_id =0
+	</select>
+
+    <select id="getObjectById" resultType="com.task.pojo.UserGroup">
+    	SELECT * FROM u_m_UserGroup WHERE id=#{id}
+	</select>
+
+    <insert id="addObject" parameterType="com.task.pojo.UserGroup" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO u_m_UserGroup
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="u_id != null and u_id != ''">u_id,</if>
+            <if test="m_id != null and m_id != ''">m_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="u_id != null and u_id != ''">#{u_id,jdbcType=INTEGER},</if>
+            <if test="m_id != null and m_id != ''">#{m_id,jdbcType=INTEGER},</if>
+        </trim>
+    </insert>
+
+    <insert id="batchAddObject" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO Sample(name,age,sex) VALUES
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.name},#{item.age},#{item.sex})
+        </foreach>
+    </insert>
+
+    <select id="getObjectList" resultType="com.task.pojo.UserGroup">
+        SELECT * FROM Sample
+        <where>
+            <if test="name != null and name != ''">AND name=#{name,jdbcType=VARCHAR}</if>
+            <if test="sex != null and sex != ''">AND sex=#{sex,jdbcType=VARCHAR}</if>
+            <if test="age != null and age != ''">AND age=#{age,jdbcType=INTEGER}</if>
+        </where>
+    </select>
+
+    <select id="findByObjectPageList" resultType="com.task.pojo.UserGroup">
+        SELECT m.* FROM u_m_UserGroup s
+        INNER JOIN u_dyn_msg m
+        WHERE s.m_id = m.id
+        AND s.u_id = #{u_id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteObjectById" parameterType="com.task.pojo.UserGroup">
+      DELETE FROM u_m_UserGroup where u_id=#{u_id} and m_id= #{m_id}
+    </delete>
+
+    <update id="updateObject" parameterType="com.task.pojo.UserGroup">
+        UPDATE Sample
+        <set>
+            <if test="name != null and name != ''">NAME=#{name,jdbcType=VARCHAR},</if>
+            <if test="sex != null and sex != ''">SEX=#{sex,jdbcType=VARCHAR},</if>
+            <if test="age != null and age != ''">AGE=#{age,jdbcType=INTEGER},</if>
+        </set>
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <delete id="batchDeleteObject">
+        DELETE FROM sample where id in(
+        <foreach collection="list" index="index" item="item" separator=",">
+            #{item}
+        </foreach>
+        )
+    </delete>
+
+</mapper>

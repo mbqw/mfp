@@ -67,13 +67,15 @@ public class CommonController extends BaseController {
      * @param user
      */
     @RequestMapping("/toLogin")
-    public void toLogin(HttpServletResponse response, User user){
+    public void toLogin(HttpServletRequest request,HttpServletResponse response, User user){
         PrintWriter out = super.getOut(response);
         Map<String, Object> map = new HashMap<String, Object>();
         try {
             user.setPassword(MD5Utils.getMd5Str(user.getPassword()));
             List<User> userList = userService.getObjectList(user);
             if (userList!=null &&userList.size()>0){
+                //true在线,false离线或隐身
+                request.getSession().setAttribute(user.getId()+"",true);
                 map.put("success", true);
                 map.put("id", userList.get(0).getId());
             } else{
@@ -102,8 +104,10 @@ public class CommonController extends BaseController {
             if (userList!=null &&userList.size()>0){
                 map.put("success", true);
                 map.put("id", userList.get(0).getId());
-                String key = MailUtils.sendKey(user.getEmail());
-                request.getSession().setAttribute("key",key);
+                if (user.getEmail()!=null){
+                    String key = MailUtils.sendKey(user.getEmail());
+                    request.getSession().setAttribute("key",key);
+                }
             } else{
                 map.put("success", false);
                 map.put("info", "账号不存在");

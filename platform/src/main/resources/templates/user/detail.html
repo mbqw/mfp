@@ -107,10 +107,10 @@
                 opacity: 1;
             }
         }
-        .headshow{
+        .avatar{
             transition-duration:0.5s; /*过度的时间为0，5秒*/
         }
-        .headshow:hover{
+        .avatar:hover{
             cursor: pointer;
             transform:scale(2);
             -webkit-transform: scale(2); /*Safari 和 Chrome*/
@@ -126,8 +126,8 @@
 <div class="demo">
     <div  align="center" style="margin: 10px 0 20px">
         <br>
-        <img th:if="${user.id == user_id}" th:onclick="|changeHeadshow(${user.id})|" class="headshow" th:src="${user.headshow}" alt="头像" style="width:64px;border-radius:64px;">
-        <img th:if="${user.id != user_id}" class="headshow" th:src="${user.headshow}" alt=" " style="width:64px;border-radius:64px;">
+        <img th:if="${user.id == user_id}" th:onclick="|changeAvatar(${user.id})|" class="avatar" th:src="${user.avatar}" alt="头像" style="width:64px;border-radius:64px;">
+        <img th:if="${user.id != user_id}" class="avatar" th:src="${user.avatar}" alt=" " style="width:64px;border-radius:64px;">
         <br>
         <br>
         <span>[[${user.username}]]</span>
@@ -198,7 +198,7 @@
         <li class="list-group-item">
             <div class="media">
                 <div class="media-left">
-                    <img class="media-object img-rounded cd-trigger" style="width: 30px; height: 30px;border-radius:30px;" src="{{value.user.headshow}}" />
+                    <img class="media-object img-rounded cd-trigger" style="width: 30px; height: 30px;border-radius:30px;" src="{{value.user.avatar}}" />
                 </div>
                 <div class="media-body">
                     <h5 class="media-heading">{{value.user.username}}</h5>

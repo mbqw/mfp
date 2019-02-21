@@ -18,7 +18,7 @@
             <if test="email != null and email != ''">email,</if>
             <if test="phone != null and phone != ''">phone,</if>
             <if test="address != null and address != ''">address,</if>
-            <if test="headshow != null and headshow != ''">headshow,</if>
+            <if test="avatar != null and avatar != ''">avatar,</if>
             <if test="sign != null and sign != ''">sign,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -30,7 +30,7 @@
             <if test="email != null and email != ''">#{email,jdbcType=VARCHAR},</if>
             <if test="phone != null and phone != ''">#{phone,jdbcType=VARCHAR},</if>
             <if test="address != null and address != ''">#{address,jdbcType=VARCHAR},</if>
-            <if test="headshow != null and headshow != ''">#{headshow,jdbcType=VARCHAR},</if>
+            <if test="avatar != null and avatar != ''">#{avatar,jdbcType=VARCHAR},</if>
             <if test="sign != null and sign != ''">#{sign,jdbcType=VARCHAR},</if>
         </trim>
     </insert>
@@ -75,7 +75,7 @@
             <if test="email != null and email != ''">email=#{email,jdbcType=VARCHAR},</if>
             <if test="phone != null and phone != ''">phone=#{phone,jdbcType=VARCHAR},</if>
             <if test="address != null and address != ''">address=#{address,jdbcType=VARCHAR},</if>
-            <if test="headshow != null and headshow != ''">headshow=#{headshow,jdbcType=VARCHAR},</if>
+            <if test="avatar != null and avatar != ''">avatar=#{avatar,jdbcType=VARCHAR},</if>
             <if test="sign != null and sign != ''">sign=#{sign,jdbcType=VARCHAR},</if>
         </set>
         WHERE ID = #{id,jdbcType=VARCHAR}

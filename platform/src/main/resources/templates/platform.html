@@ -63,7 +63,7 @@
         <li class="list-group-item">
             <div class="media">
                 <div class="media-left">
-                    <img onclick="toDetail('{{value.u_id}}')" class="media-object img-rounded cd-trigger" style="width: 30px; height: 30px;border-radius:30px;"  src="{{value.user.headshow}}" />
+                    <img onclick="toDetail('{{value.u_id}}')" class="media-object img-rounded cd-trigger" style="width: 30px; height: 30px;border-radius:30px;"  src="{{value.user.avatar}}" />
                 </div>
                 <div class="media-body">
                     <input type="hidden" id="id" value="{{value}}"/>
@@ -149,7 +149,6 @@
 <script>
     layui.use('layim', function(){
         var layim = layui.layim;
-
         //演示自动回复
         var autoReplay = [
             '您好，我现在有事不在，一会再和您联系。',
@@ -159,8 +158,10 @@
         layim.config({
             //初始化接口
             init: {
-                url: '/getList.json'
-                ,data: {}
+                url: '/im/init'
+                ,data: {
+                    id:document.getElementById("user_id").value,
+                }
             }
             //查看群员接口
             ,members: {

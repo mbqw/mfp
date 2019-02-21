@@ -8,6 +8,7 @@ import com.task.pojo.DynamicMsg;
 import com.task.pojo.Star;
 import com.task.service.DynamicMsgService;
 import com.task.service.StarService;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;

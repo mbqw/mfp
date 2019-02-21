@@ -199,7 +199,7 @@ function toDetail(u_id) {
     });
 }
 //换头像
-function changeHeadshow(user_id) {
+function changeAvatar(user_id) {
     var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
     parent.layer.close(index);
     parent.layer.open({
@@ -207,7 +207,7 @@ function changeHeadshow(user_id) {
         title:"更改头像",
         scrollbar:false,
         area: ['650px','550px'],
-        content: '/user/toHeadshow/'+user_id,
+        content: '/user/toAvatar/'+user_id,
 
     });
 }

@@ -35,9 +35,9 @@
     <div id="container2" class="container" style="display: none">
         <h1>注册</h1>
         <form id="registerForm" class="form" onsubmit="return false;">
-            <input type="text" placeholder="用户名" name="username" onblur="isExist('username')">
+            <input type="text" placeholder="用户名" name="username" onblur="formValidate('username')">
             <span id="registerSpan1" style="font-size: smaller;display: none;color: red;">不能为空</span>
-            <input type="text" placeholder="登陆账户" name="account" onblur="formValidate('account')">
+            <input type="text" placeholder="登陆账户" name="account" onblur="isExist('account')">
             <span id="registerSpan2" style="font-size: smaller;display: none;color: red;">不能为空</span>
             <input type="password" placeholder="登陆密码" name="password" onblur="formValidate('password')">
             <span id="registerSpan3" style="font-size: smaller;display: none;color: red;">不能为空</span>
@@ -140,24 +140,26 @@
     //账号是否重复
     function isExist(type) {
         formValidate(type);
-        if ($("#registerSpan1").css("display")!='none'){
+        if ($("#registerSpan2").css("display")!='none'){
             return;
         }
         $.ajax({
             type:'POST',
-            data:$("#resetForm").serialize(),
+            data:{
+                "account":$("#registerForm input[name='account']").val()
+            },
             dataType:"JSON",
             url:'/common/checkPE',
             success:function (data) {
                 if (data.success) {
-                    $("#registerSpan1").css("display","");
-                    $("#registerSpan1").text("此账号已存在");
+                    $("#registerSpan2").css("display","");
+                    $("#registerSpan2").text("此账号已存在");
                 }else{
                     if (data.info=="账号不存在"){
-                        $("#registerSpan1").css("display","none");
+                        $("#registerSpan2").css("display","none");
                     } else{
-                        $("#registerSpan1").css("display","");
-                        $("#registerSpan1").text(data.info);
+                        $("#registerSpan2").css("display","");
+                        $("#registerSpan2").text(data.info);
                     }
                 }
             }

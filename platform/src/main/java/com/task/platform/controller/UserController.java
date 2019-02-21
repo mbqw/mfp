@@ -66,14 +66,14 @@ public class UserController extends BaseController{
         out.print(super.objectToJson(map));
     }
     //跳转到更换头像页面
-    @RequestMapping("/toHeadshow/{user_id}")
-    public ModelAndView toHeadshow(ModelMap modelMap, @PathVariable Integer user_id){
+    @RequestMapping("/toAvatar/{user_id}")
+    public ModelAndView toAvatar(ModelMap modelMap, @PathVariable Integer user_id){
         modelMap.addAttribute("user_id",user_id);
-        return new ModelAndView("user/headshow",modelMap);
+        return new ModelAndView("user/avatar",modelMap);
     }
     //更换头像
-    @RequestMapping("/headshow")
-    public void headshow(HttpServletRequest request, HttpServletResponse response,@RequestParam("imagefile") MultipartFile file,Integer id){
+    @RequestMapping("/avatar")
+    public void avatar(HttpServletRequest request, HttpServletResponse response,@RequestParam("imagefile") MultipartFile file,Integer id){
         PrintWriter out = super.getOut(response);
         Map<String, Object> map = new HashMap<String, Object>();
         try {
@@ -86,7 +86,7 @@ public class UserController extends BaseController{
                 file.transferTo(new File(dir,fileName));
                 User user = new User();
                 user.setId(id);
-                user.setHeadshow("\\head\\"+fileName);
+                user.setAvatar("\\head\\"+fileName);
                 userService.updateObject(user);
                 map.put("success", true);
                 map.put("info","\\head\\"+fileName);
@@ -101,4 +101,5 @@ public class UserController extends BaseController{
         }
         out.print(super.objectToJson(map));
     }
+
 }
