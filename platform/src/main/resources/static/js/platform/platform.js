@@ -225,3 +225,26 @@ function toUpdate(u_id) {
         content: '/user/toUpdate/'+u_id
     });
 }
+//通讯面板
+function userIM() {
+    /*layer.open({
+        type: 1,
+        title:"好友",
+        area: ['420px', '240px'], //宽高
+        content: 'html内容'
+    });*/
+    layer.open({
+        title:"好友",
+        scrollbar:false,
+        anim: 5,
+        type: 2,
+        area: ['800px','600px'],
+        fixed: false, //不固定
+        maxmin: true,
+        content: '/im/toList/'+$("#user_id").val(),
+        cancel: function(index, layero){
+            layer.close(index);
+            window.location.href="/platform/index/"+$("#user_id").val();
+        }
+    });
+}

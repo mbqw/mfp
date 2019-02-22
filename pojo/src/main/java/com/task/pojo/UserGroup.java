@@ -10,6 +10,7 @@ public class UserGroup {
     private String groupname;
     private String avatar;
     private Integer u_id;
+    private Integer type;
     private List<User> list;
 
 }

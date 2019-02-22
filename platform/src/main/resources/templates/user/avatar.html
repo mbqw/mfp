@@ -7,6 +7,7 @@
 </head>
 <body>
 <input type="hidden" id="user_id" th:value="${user_id}">
+<input type="hidden" id="avatar" th:value="${avatar}">
 <div class="htmleaf-container">
     <div class="container">
         <div class="imageBox">
@@ -37,7 +38,7 @@
             {
                 thumbBox: '.thumbBox',
                 spinner: '.spinner',
-                imgSrc: ''
+                imgSrc: $("#avatar").val()
             }
         var cropper = $('.imageBox').cropbox(options);
         $('#upload-file').on('change', function(){

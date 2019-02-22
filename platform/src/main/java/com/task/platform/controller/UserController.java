@@ -69,6 +69,8 @@ public class UserController extends BaseController{
     @RequestMapping("/toAvatar/{user_id}")
     public ModelAndView toAvatar(ModelMap modelMap, @PathVariable Integer user_id){
         modelMap.addAttribute("user_id",user_id);
+        modelMap.addAttribute("avatar",userService.getObjectById(user_id).getAvatar());
+
         return new ModelAndView("user/avatar",modelMap);
     }
     //更换头像

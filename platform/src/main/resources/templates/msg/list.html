@@ -58,7 +58,7 @@
                 {type: 'checkbox', fixed: 'left'}
                 ,{field:'id', title:'ID',hide:true }
                 ,{field:'username', title:'用户',sort:true,templet:function(d){
-                        return "<img src='"+d.user.avatar+"' style='padding-right: 10px'>"+d.user.username;
+                        return "<img src='"+d.user.avatar+"' style='width:25px;border-radius: 25px'>"+"&nbsp;"+d.user.username;
                 }}
                 ,{field:'content', title:'内容', }
                 ,{field:'img', title:'图片',templet:'#img'}

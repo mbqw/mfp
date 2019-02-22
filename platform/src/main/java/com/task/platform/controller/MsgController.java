@@ -87,6 +87,7 @@ public class MsgController extends BaseController{
         PrintWriter out = super.getOut(response);
         Map<String, Object> map = new HashMap<String, Object>();
         try {
+            msg.setContent(msg.getContent().replaceAll("(http(s?)://)[a-zA-Z0-9.:]*",""));
             dynamicMsgService.addObject(msg);
             map.put("success", true);
         } catch (Exception e) {

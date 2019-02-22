@@ -24,14 +24,45 @@
         ON m.group_id = g.id
         LEFT JOIN USER u
         ON m.user_id=u.id
-        WHERE g.u_id = #{id}
+        WHERE g.u_id = #{id} AND g.type = 0
 	</select>
     <select id="getGroupById" resultType="com.task.pojo.UserGroup">
     	SELECT g.* FROM u_group g
         INNER JOIN g_members m
         ON m.group_id = g.id
-        WHERE m.`user_id` = #{id} AND g.u_id =0
+        WHERE m.`user_id` = #{id} AND g.type =1
 	</select>
+
+    <select id="findFriendsPageList" resultType="map">
+        SELECT g.*,u.id uid,u.username,u.avatar uavatar,u.sign FROM u_group g
+        INNER JOIN g_members m
+        ON m.group_id = g.id
+        INNER JOIN USER u
+        ON m.user_id=u.id
+        WHERE g.u_id = #{id} AND g.type = 0
+        <if test="groupId != null and groupId != ''">AND g.id=#{groupId,jdbcType=INTEGER}</if>
+        <if test="username != null and username != ''">AND u.username like "%"#{username,jdbcType=VARCHAR}"%"</if>
+    </select>
+
+    <select id="findGroupsPageList" resultType="map">
+        SELECT g.* FROM u_group g
+        INNER JOIN g_members m
+        ON m.group_id = g.id
+        WHERE m.`user_id` = #{id} OR g.`u_id`=  #{id}
+        <if test="type != null and type != ''">AND g.type =#{type,jdbcType=INTEGER}</if>
+        <if test="groupname != null and groupname != ''">AND g.groupname like "%"#{groupname,jdbcType=VARCHAR}"%"</if>
+    </select>
+    <select id="getGroups" resultType="map">
+        SELECT * FROM u_group g
+        WHERE g.`u_id`=#{id} AND g.type =0
+    </select>
+    <delete id="deleteGroup">
+        DELETE FROM u_group where id = #{group_id} and u_id = #{user_id}
+    </delete>
+
+
+
+
 
     <select id="getObjectById" resultType="com.task.pojo.UserGroup">
     	SELECT * FROM u_m_UserGroup WHERE id=#{id}
@@ -93,5 +124,6 @@
         </foreach>
         )
     </delete>
+
 
 </mapper>
