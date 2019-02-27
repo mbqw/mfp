@@ -2,7 +2,6 @@ package com.task.dao;
 
 import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.github.miemiedev.mybatis.paginator.domain.PageList;
-import com.task.pojo.User;
 import com.task.pojo.UserGroup;
 import org.springframework.stereotype.Repository;
 
@@ -16,5 +15,10 @@ public interface UserGroupMapper extends BaseMapper<UserGroup> {
     List<UserGroup> getGroupById(Integer id);
     PageList<Map> findFriendsPageList(Map<String, Object> params, PageBounds pageBounds);
     PageList<Map> findGroupsPageList(Map<String, Object> params, PageBounds pageBounds);
-    void deleteGroup(Integer user_id, Integer group_id);
+    void deleteGroup(Map params);
+    void moveFriend(Map params);
+    void deleteFriend(Map params);
+    void batchDelete(Map params);
+    void addGroup(Map params);
+    void addMember(Map params);
 }

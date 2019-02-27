@@ -27,13 +27,25 @@
 </div>
 
 <script type="text/html" id="toolbarDemo">
-    <div class="layui-form">
+    <button class="layui-btn layui-btn-sm" lay-event="batchAddGroup">
+        <i class="layui-icon layui-icon-add-circle"></i>
+        邀请到群
+    </button>
+    <button class="layui-btn layui-btn-sm" lay-event="batchDelete">
+        <i class="layui-icon layui-icon-delete"></i>
+        批量删除
+    </button>
+    <div class="layui-form" style="margin-top: 10px">
         <div class="layui-input-inline " style="width: 200px;">
-            <select id="groupId" name="groupId">
+            <select id="groupId" name="groupId" lay-search="">
                 <option value="">请选择分组</option>
-                <th:block th:each="group,groupStat :${groups}">
-                    <option th:value="${group.id}">[[${group.groupname}]]</option>
-                </th:block>
+
+            </select>
+        </div>
+        <div id="moveto" class="layui-input-inline " style="width: 200px;margin-left: 16px;margin-top: 10px;display: none">
+            <select id="groupId2" name="groupId" lay-search="">
+                <option value="">请选择分组</option>
+
             </select>
         </div>
         <div class="layui-input-inline " style="width: 200px;">
@@ -43,7 +55,15 @@
     </div>
 </script>
 <script type="text/html" id="toolbarDemo2">
-    <div class="layui-form">
+    <button class="layui-btn layui-btn-sm" lay-event="addGroup">
+        <i class="layui-icon layui-icon-add-1"></i>
+        添加分组
+    </button>
+    <button class="layui-btn layui-btn-sm" lay-event="addGroup2">
+        <i class="layui-icon layui-icon-add-1"></i>
+        添加群
+    </button>
+    <div class="layui-form" style="margin-top: 10px">
         <div class="layui-input-inline " style="width: 200px;">
             <select id="groupType">
                 <option value="">请选择类型</option>
@@ -63,9 +83,12 @@
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
 <script type="text/html" id="barDemo2">
+    {{# if(d.type==0){ }}
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    {{#  }else{ }}
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="quit">退出</a>
+    {{#  }}}
 </script>
-
 <script src="/layui/layui.all.js"></script>
 
 <script th:inline="none">
@@ -103,6 +126,14 @@
             ,page: true
             ,loading:true
             ,defaultToolbar: ['print', 'exports']
+            ,done: function(res, curr, count){
+                var data = res.groupList;
+                data.forEach(function (item,index) {
+                    $("#groupId").append("<option value='"+item.id+"'>"+item.groupname+"</option>");
+                    $("#groupId2").append("<option value='"+item.id+"'>"+item.groupname+"</option>");
+                    form.render();
+                })
+            }
         });
         table.render({
             elem: '#groups'
@@ -141,18 +172,75 @@
             console.info(obj);
             var data = checkStatus.data;
             switch(obj.event){
-                case 'getCheckData':
+                case 'batchAddGroup':
                     if (data.length==0){
-                        layer.msg('请先选择要删除的数据行！', {icon: 2});
+                        layer.msg('请先选择要邀请的好友！', {icon: 2});
                         return;
                     }
-                    layer.confirm('确定取消这些收藏吗', function(index){
+                    layer.open({
+                        type: 1,
+                        title:"邀请好友至",
+                        shade:false,
+                        area:['230px','80%'],
+                        content: $('#moveto'),
+                        btn: ['确定'],
+                        yes: function(index, layero){
+                            var groupId  = $("#groupId2").val();
+                            if (groupId != '' && groupId!=data.id){
+                                $.ajax({
+                                    type:"POST",
+                                    data:{
+                                        uid:data.uid,
+                                        oldid:data.id,
+                                        newid:groupId,
+                                    },
+                                    dataType:"JSON",
+                                    url:'/im/moveFriend',
+                                    success:function (data) {
+                                        if (data.success){
+                                            layer.close(index);
+                                            table.reload('friends',{
+                                            });
+                                        } else{
+                                            layer.alert(data.msg);
+                                        }
 
+                                    }
+                                });
+                            }else{
+                                layer.close(index);
+                            }
+                        }
+                    });
+                    break;
+                case 'batchDelete':
+                    if (data.length==0){
+                        layer.msg('请先选择要删除的好友！', {icon: 2});
+                        return;
+                    }
+                    layer.confirm('确定删除这些好友吗', function(index){
+                        var user_group_arr = [];
                         layer.close(index);
                         data.forEach(function (item,index2) {
-                            delStar(item.id);
+                            user_group_arr.push("("+item.uid+","+item.id+")");
                         })
-                        location.reload(true);
+                        $.ajax({
+                            async:false,
+                            type:"POST",
+                            data:{
+                                user_group_arr:user_group_arr.join(","),
+                            },
+                            dataType:"JSON",
+                            url:'/im/batchDelete',
+                            success:function (data) {
+                                if (data.success){
+                                    table.reload('friends',{
+                                    });
+                                } else{
+                                    layer.alert(data.msg)
+                                }
+                            }
+                        });
                     })
 
                     break;
@@ -169,40 +257,62 @@
                         }
                     });
                     break;
-                case 'groupsQuery':
-                    table.reload('groups',{
-                        where: {
-                            queryParams:{
-                                groupname:$("#groupname").val(),
-                            }
-                        }
-                        ,page: {
-                            curr: 1 //重新从第 1 页开始
-                        }
-                    });
-                    break;
             };
         });
         //头工具栏事件
         table.on('toolbar(groups)', function(obj){
             var checkStatus = table.checkStatus(obj.config.id);
-            console.info(obj);
             var data = checkStatus.data;
             switch(obj.event){
-                case 'getCheckData':
-                    if (data.length==0){
-                        layer.msg('请先选择要删除的数据行！', {icon: 2});
-                        return;
-                    }
-                    layer.confirm('确定取消这些收藏吗', function(index){
-
+                case 'addGroup':
+                    layer.prompt({title: '输入组名称', formType: 0}, function(pass, index){
                         layer.close(index);
-                        data.forEach(function (item,index2) {
-                            delStar(item.id);
-                        })
-                        location.reload(true);
-                    })
-
+                        $.ajax({
+                            async:false,
+                            type:"POST",
+                            data:{
+                                u_id:$("#user_id").val(),
+                                type:0,
+                                groupname:pass
+                            },
+                            dataType:"JSON",
+                            url:'/im/addGroup',
+                            success:function (data) {
+                                if (data.success){
+                                    table.reload('groups',{
+                                    });
+                                    table.reload('friends',{
+                                    });
+                                } else{
+                                    layer.alert(data.msg)
+                                }
+                            }
+                        });
+                    });
+                    break;
+                case 'addGroup2':
+                    layer.prompt({title: '输入群名称', formType: 0}, function(pass, index){
+                        layer.close(index);
+                        $.ajax({
+                            async:false,
+                            type:"POST",
+                            data:{
+                                u_id:$("#user_id").val(),
+                                type:1,
+                                groupname:pass
+                            },
+                            dataType:"JSON",
+                            url:'/im/addGroup',
+                            success:function (data) {
+                                if (data.success){
+                                    table.reload('groups',{
+                                    });
+                                } else{
+                                    layer.alert(data.msg)
+                                }
+                            }
+                        });
+                    });
                     break;
                 case 'groupsQuery':
                     table.reload('groups',{
@@ -223,26 +333,83 @@
         //监听行工具事件
         table.on('tool(friends)', function(obj){
             var data = obj.data;
-            console.log(obj)
-            /*console.log(data)*/
-            if(obj.event === 'del'){
+            if(obj.event === 'move'){
+                layer.open({
+                    type: 1,
+                    title:"移动好友至",
+                    shade:false,
+                    area:['230px','80%'],
+                    content: $('#moveto'),
+                    btn: ['确定'],
+                    yes: function(index, layero){
+                        var groupId  = $("#groupId2").val();
+                        if (groupId != '' && groupId!=data.id){
+                            $.ajax({
+                                type:"POST",
+                                data:{
+                                    uid:data.uid,
+                                    oldid:data.id,
+                                    newid:groupId,
+                                },
+                                dataType:"JSON",
+                                url:'/im/moveFriend',
+                                success:function (data) {
+                                    if (data.success){
+                                        layer.close(index);
+                                        table.reload('friends',{
+                                        });
+                                    } else{
+                                        layer.alert(data.msg);
+                                    }
+
+                                }
+                            });
+                        }else{
+                            layer.close(index);
+                        }
+                    }
+                });
+            }else if(obj.event === 'del'){
                 layer.confirm('确定删除好友吗', function(index){
                     layer.close(index);
-                    imDelete(data.id);
-                    location.reload(true);
+                    deleteFriend(data.uid,data.id);
+                    table.reload('friends',{
+                    });
                 });
             }
         });
         //监听行工具事件
         table.on('tool(groups)', function(obj){
             var data = obj.data;
-            console.log(obj)
-            console.log(data)
             if(obj.event === 'del'){
-                layer.confirm('确定删除'+(data.u_id == 0?'群':'分组(分组下所有好友将被删除)')+'吗', function(index){
+                layer.confirm('确定删除分组(分组下所有好友将被删除))吗', function(index){
                     layer.close(index);
-                    deleteGroup(data.id);
-                    location.reload(true);
+                    $.ajax({
+                        async:false,
+                        type:"POST",
+                        data:{
+                            group_id:data.id
+                        },
+                        dataType:"JSON",
+                        url:'/im/deleteGroup',
+                        success:function (data) {
+                            if (data.success){
+                                table.reload('groups',{
+                                });
+                                table.reload('friends',{
+                                });
+                            } else{
+                                layer.alert(data.msg)
+                            }
+                        }
+                    });
+                });
+            }else if(obj.event === 'quit'){
+                layer.confirm('确定退出吗', function(index){
+                    layer.close(index);
+                    deleteFriend($("#user_id").val(),data.id);
+                    table.reload('groups',{
+                    });
                 });
             }
         });
@@ -250,18 +417,21 @@
 
     });
     //删除分组
-    function deleteGroup(group_id) {
+    function deleteFriend(user_id,group_id) {
         $.ajax({
             async:false,
             type:"POST",
             data:{
-                user_id:$("#user_id").val(),
+                user_id:user_id,
                 group_id:group_id
             },
             dataType:"JSON",
-            url:'/im/deleteGroup',
+            url:'/im/deleteFriend',
             success:function (data) {
-                layer.alert(data.info)
+                if (data.success){
+                } else{
+                    layer.alert(data.msg)
+                }
             }
         });
     }

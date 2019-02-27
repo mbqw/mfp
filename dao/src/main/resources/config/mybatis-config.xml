@@ -2,9 +2,10 @@
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" 
 "http://mybatis.org/dtd/mybatis-3-config.dtd"> 
 <configuration>  
-	<!-- <settings>
-    	<setting name="logImpl" value="LOG4J"/>
-    </settings> -->
+	 <settings>
+         <!-- 解决map value 等于null无法获取值-->
+         <setting name="callSettersOnNulls" value="true"/>
+    </settings>
     <typeHandlers>
         <package name="com.task.platform.typeHandler"/>
     </typeHandlers>

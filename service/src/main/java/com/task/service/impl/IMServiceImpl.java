@@ -4,15 +4,12 @@ import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.github.miemiedev.mybatis.paginator.domain.PageList;
 import com.task.dao.UserGroupMapper;
 import com.task.pojo.IMData;
-import com.task.pojo.User;
-import com.task.pojo.UserGroup;
 import com.task.service.IMService;
 import com.task.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Map;
 
 @Service("imService")
@@ -49,7 +46,27 @@ public class IMServiceImpl extends BaseServiceImpl<IMData> implements IMService 
     }
 
     @Override
-    public void deleteGroup(Integer user_id, Integer group_id) {
-        mapper.deleteGroup(user_id,group_id);
+    public void deleteGroup(Map params) {
+        mapper.deleteGroup(params);
+    }
+    @Override
+    public void moveFriend(Map params) {
+        mapper.moveFriend(params);
+    }
+    @Override
+    public void deleteFriend(Map params) {
+        mapper.deleteFriend(params);
+    }
+    @Override
+    public void batchDelete(Map params) {
+        mapper.batchDelete(params);
+    }
+    @Override
+    public void addGroup(Map params) {
+        Integer type = Integer.valueOf(params.get("type").toString());
+        mapper.addGroup(params);
+        if (type != null && type == 1) {
+            mapper.addMember(params);
+        }
     }
 }

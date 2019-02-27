@@ -238,7 +238,7 @@ function userIM() {
         scrollbar:false,
         anim: 5,
         type: 2,
-        area: ['800px','600px'],
+        area: ['70%','90%'],
         fixed: false, //不固定
         maxmin: true,
         content: '/im/toList/'+$("#user_id").val(),

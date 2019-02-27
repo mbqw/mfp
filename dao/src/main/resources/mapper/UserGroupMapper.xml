@@ -46,9 +46,14 @@
 
     <select id="findGroupsPageList" resultType="map">
         SELECT g.* FROM u_group g
-        INNER JOIN g_members m
-        ON m.group_id = g.id
-        WHERE m.`user_id` = #{id} OR g.`u_id`=  #{id}
+        WHERE g.`u_id` = #{id} AND g.`type` =0
+        <if test="type != null and type != ''">AND g.type =#{type,jdbcType=INTEGER}</if>
+        <if test="groupname != null and groupname != ''">AND g.groupname like "%"#{groupname,jdbcType=VARCHAR}"%"</if>
+        UNION
+        SELECT g.* FROM `u_group` g
+        INNER JOIN `g_members`  m
+        ON g.`id` = m.group_id
+        WHERE m.user_id = #{id} AND g.`type` =1
         <if test="type != null and type != ''">AND g.type =#{type,jdbcType=INTEGER}</if>
         <if test="groupname != null and groupname != ''">AND g.groupname like "%"#{groupname,jdbcType=VARCHAR}"%"</if>
     </select>
@@ -56,10 +61,44 @@
         SELECT * FROM u_group g
         WHERE g.`u_id`=#{id} AND g.type =0
     </select>
-    <delete id="deleteGroup">
-        DELETE FROM u_group where id = #{group_id} and u_id = #{user_id}
+    <delete id="deleteGroup" parameterType="map">
+        DELETE FROM u_group where id = #{group_id}
     </delete>
-
+    <delete id="deleteFriend" parameterType="map">
+        DELETE FROM g_members where user_id = #{user_id} and group_id = #{group_id}
+    </delete>
+    <delete id="batchDelete" parameterType="map">
+        DELETE FROM g_members where (user_id,group_id) in (${user_group_arr})
+    </delete>
+    <update id="moveFriend" parameterType="map">
+        UPDATE g_members
+            set group_id=#{newid}
+        WHERE user_id = #{uid} AND group_id = #{oldid}
+    </update>
+    <insert id="addGroup" parameterType="map" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO u_group
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="u_id != null and u_id != ''">u_id,</if>
+            <if test="type != null and type != ''">type,</if>
+            <if test="groupname != null and groupname != ''">groupname,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="u_id != null and u_id != ''">#{u_id,jdbcType=INTEGER},</if>
+            <if test="type != null and type != ''">#{type,jdbcType=INTEGER},</if>
+            <if test="groupname != null and groupname != ''">#{groupname,jdbcType=VARCHAR},</if>
+        </trim>
+    </insert>
+    <insert id="addMember" parameterType="map">
+        INSERT INTO g_members
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="u_id != null and u_id != ''">user_id,</if>
+            <if test="id != null and id != ''">group_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="u_id != null and u_id != ''">#{u_id,jdbcType=INTEGER},</if>
+            <if test="id != null and id != ''">#{id,jdbcType=INTEGER},</if>
+        </trim>
+    </insert>
 
 
 

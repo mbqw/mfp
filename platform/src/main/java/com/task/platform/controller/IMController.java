@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,8 +36,6 @@ public class IMController extends BaseController {
     @RequestMapping("/toList/{id}")
     public ModelAndView detail(ModelMap modelMap, @PathVariable Integer id){
         modelMap.addAttribute("id",id);
-        List<Map> list = imService.getGroups(id);
-        modelMap.addAttribute("groups",list);
         return new ModelAndView("/user/im",modelMap);
     }
     //初始化数据
@@ -67,6 +66,7 @@ public class IMController extends BaseController {
             if (pageList != null) {
                 map.put("count", pageList.getPaginator().getTotalCount());
                 map.put("data", pageList);
+                map.put("groupList",imService.getGroups(params.get("id")));
                 if(pageList.size() == 0){
                     map.put("code",1);
                     map.put("msg","无数据");
@@ -109,15 +109,75 @@ public class IMController extends BaseController {
     }
     //删除群组
     @RequestMapping("/deleteGroup")
-    public void deleteGroup(HttpServletRequest request, HttpServletResponse response, Integer user_id,Integer group_id){
+    public void deleteGroup(HttpServletRequest request, HttpServletResponse response, @RequestParam Map params){
         PrintWriter out = super.getOut(response);
         Map<String, Object> map = new HashMap<String, Object>();
         try {
-            imService.deleteGroup(user_id,group_id);
-            map.put("code", 0);
+            imService.deleteGroup(params);
+            map.put("success", true);
         } catch (Exception e) {
-            map.put("code", 1);
-            map.put("msg", "获取信息失败");
+            map.put("success", false);
+            map.put("msg", "操作失败");
+            e.printStackTrace();
+        }
+        out.print(super.objectToJson(map));
+    }
+    //删除好友
+    @RequestMapping("/deleteFriend")
+    public void deleteFriend(HttpServletRequest request, HttpServletResponse response, @RequestParam Map params){
+        PrintWriter out = super.getOut(response);
+        Map<String, Object> map = new HashMap<String, Object>();
+        try {
+            imService.deleteFriend(params);
+            map.put("success", true);
+        } catch (Exception e) {
+            map.put("success", false);
+            map.put("msg", "操作失败");
+            e.printStackTrace();
+        }
+        out.print(super.objectToJson(map));
+    }
+    //批量删除好友
+    @RequestMapping("/batchDelete")
+    public void batchDelete(HttpServletRequest request, HttpServletResponse response, @RequestParam Map params){
+        PrintWriter out = super.getOut(response);
+        Map<String, Object> map = new HashMap<String, Object>();
+        try {
+            imService.batchDelete(params);
+            map.put("success", true);
+        } catch (Exception e) {
+            map.put("success", false);
+            map.put("msg", "操作失败");
+            e.printStackTrace();
+        }
+        out.print(super.objectToJson(map));
+    }
+    //移动好友至其它分组
+    @RequestMapping("/moveFriend")
+    public void moveFriend(HttpServletRequest request, HttpServletResponse response,@RequestParam Map params){
+        PrintWriter out = super.getOut(response);
+        Map<String, Object> map = new HashMap<String, Object>();
+        try {
+            imService.moveFriend(params);
+            map.put("success", true);
+        } catch (Exception e) {
+            map.put("success", false);
+            map.put("msg", "操作失败");
+            e.printStackTrace();
+        }
+        out.print(super.objectToJson(map));
+    }
+    //添加分组
+    @RequestMapping("/addGroup")
+    public void addGroup(HttpServletRequest request, HttpServletResponse response,@RequestParam Map params){
+        PrintWriter out = super.getOut(response);
+        Map<String, Object> map = new HashMap<String, Object>();
+        try {
+            imService.addGroup(params);
+            map.put("success", true);
+        } catch (Exception e) {
+            map.put("success", false);
+            map.put("msg", "操作失败");
             e.printStackTrace();
         }
         out.print(super.objectToJson(map));
