@@ -69,4 +69,7 @@ public class IMServiceImpl extends BaseServiceImpl<IMData> implements IMService 
             mapper.addMember(params);
         }
     }
+    public boolean isFriend(Integer user_id,Integer u_id){
+        return mapper.isFriend(user_id,u_id);
+    }
 }

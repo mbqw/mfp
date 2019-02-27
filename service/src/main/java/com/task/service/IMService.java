@@ -15,5 +15,5 @@ public interface IMService extends BaseService<IMData>{
     void deleteFriend(Map params);
     void batchDelete(Map params);
     void addGroup(Map params);
-
+    boolean isFriend(Integer user_id,Integer u_id);
 }

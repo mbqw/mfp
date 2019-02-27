@@ -124,9 +124,14 @@
 <input type="hidden" id="user_id" th:value="${user_id}">
 <input type="hidden" id="u_id" th:value="${user.id}">
 <div class="demo">
+    <button th:if="${user.id != user_id && isFriend ==false}" class="layui-btn layui-btn-sm" style="background-color: #692f6c;margin-left: 10px"
+            th:onclick="|addFriend(${user_id},${user.id})|">
+        <i class="layui-icon layui-icon-add-1"></i>
+        添加好友
+    </button>
     <div  align="center" style="margin: 10px 0 20px">
         <br>
-        <img th:if="${user.id == user_id}" th:onclick="|changeAvatar(${user.id})|" class="avatar" th:src="${user.avatar}" alt="头像" style="width:64px;border-radius:64px;">
+        <img id="avatar" th:if="${user.id == user_id}" th:onclick="|changeAvatar(${user.id})|" class="avatar" th:src="${user.avatar}" alt="头像" style="width:64px;border-radius:64px;">
         <img th:if="${user.id != user_id}" class="avatar" th:src="${user.avatar}" alt=" " style="width:64px;border-radius:64px;">
         <br>
         <br>
@@ -156,7 +161,7 @@
                     </thead>
                     <tbody>
                     <tr><td>姓名</td><td>[[${user.username}]]</td></tr>
-                    <tr><td>账号</td><td>[[${user.account}]]</td></tr>
+                    <tr th:if="${user.id == user_id}"><td>账号</td><td>[[${user.account}]]</td></tr>
                     <tr><td>年龄</td><td>[[${user.age}]]</td></tr>
                     <tr><td>性别</td><td>[[${user.sex == null?'':user.sex==0?'男':'女'}]]</td></tr>
                     <tr><td>邮箱</td><td>[[${user.email}]]</td></tr>
@@ -222,14 +227,56 @@
 <th:block th:replace="/common::js2"></th:block>
 <script th:inline="none">
     var layer ;
-    var table = layui.table;
-    layui.use('layer', function(){
+    var layim;
+    layui.use(['layer','table','layim'], function(){
         layer = layui.layer;
-    });
-    //转换静态表格
-    table.init('test', {
+        layim = layui.layim;
+        var table = layui.table;
+        //转换静态表格
+        table.init('test', {
 
+        });
     });
+
+</script>
+<script th:inline="javascript">
+    function addFriend(user_id,u_id) {
+        layim.add({
+            type: 'friend'
+            ,username: [[${user.username}]]
+            ,avatar: [[${user.avatar}]]
+            ,submit: function(group, remark, index){
+                console.info(group);
+                console.info(remark);
+                console.info(index);
+                layer.msg('好友申请已发送，请等待对方确认', {
+                    icon: 1
+                    ,shade: 0.5
+                }, function(){
+                    layer.close(index);
+                });
+
+                //通知对方
+                /*
+                $.post('/im-applyFriend/', {
+                  uid: info.uid
+                  ,from_group: group
+                  ,remark: remark
+                }, function(res){
+                  if(res.status != 0){
+                    return layer.msg(res.msg);
+                  }
+                  layer.msg('好友申请已发送，请等待对方确认', {
+                    icon: 1
+                    ,shade: 0.5
+                  }, function(){
+                    layer.close(index);
+                  });
+                });
+                */
+            }
+        });
+    }
 </script>
 <script>
     $('#container').waterfall({

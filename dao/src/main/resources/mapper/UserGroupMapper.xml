@@ -99,7 +99,13 @@
             <if test="id != null and id != ''">#{id,jdbcType=INTEGER},</if>
         </trim>
     </insert>
-
+    <select id="isFriend" resultType="boolean">
+    	SELECT COUNT(id)
+        FROM u_group g
+        INNER JOIN g_members m
+        ON g.id = m.group_id
+        WHERE g.u_id=#{user_id,jdbcType=INTEGER} AND g.type=0 AND m.user_id = #{u_id,jdbcType=INTEGER}
+	</select>
 
 
 

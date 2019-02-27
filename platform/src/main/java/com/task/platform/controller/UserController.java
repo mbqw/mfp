@@ -1,6 +1,7 @@
 package com.task.platform.controller;
 
 import com.task.pojo.User;
+import com.task.service.IMService;
 import com.task.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +25,8 @@ import java.util.Map;
 public class UserController extends BaseController{
     @Autowired
     private UserService userService;
+    @Autowired
+    private IMService imService;
     //静态资源路径
     @Value(value = "${upload_images_path}")
     private String upload_images_path;
@@ -33,6 +36,7 @@ public class UserController extends BaseController{
         modelMap.addAttribute("user_id",user_id);
         User user = userService.getObjectById(u_id);
         modelMap.addAttribute("user",user);
+        modelMap.addAttribute("isFriend",imService.isFriend(user_id,u_id));
         return new ModelAndView("user/detail",modelMap);
     }
     //跳转到更新页面

@@ -170,7 +170,7 @@ function userStars() {
         scrollbar:false,
         anim: 5,
         type: 2,
-        area: ['800px','600px'],
+        area: ['70%','90%'],
         fixed: false, //不固定
         maxmin: true,
         content: '/msg/toList/'+$("#user_id").val(),
@@ -183,7 +183,7 @@ function userStars() {
 //user详情页
 function toDetail(u_id) {
     layer.open({
-        type: 2,
+        type: 1,
         title:"用户信息",
         scrollbar:false,
         anim: 5,
@@ -191,6 +191,7 @@ function toDetail(u_id) {
         area: ['500px','100%'],
         fixed: false, //不固定
         resize:false,
+        maxmin: true,
         content: '/user/toDetail/'+$("#user_id").val()+'/'+u_id,
         cancel: function(index, layero){
             layer.close(index);
