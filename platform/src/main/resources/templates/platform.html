@@ -20,7 +20,7 @@
     </style>
 </head>
 <body>
-<input type="hidden" id="user_id" th:value="${id}">
+<input type="hidden" id="user_id" th:value="${user.id}">
 <!--菜单-->
 <div class="content-menu">
     <ul>
@@ -28,13 +28,13 @@
         <li onclick="userStars()">收藏</li>
         <li onclick="userIM()">好友</li>
         <li onclick="location.reload(true);">主页</li>
-        <li th:onclick="|toDetail(${id})|">个人</li>
+        <li th:onclick="|toDetail(${user.id})|">个人</li>
     </ul>
 </div>
 <!--内容-->
-<div id="container" style="top: 20px;left: 50px;right: -50px"></div>
+<div id="container" style="top: 20px;"></div>
 
-<!-- the overlay element -->
+<!-- 模板 -->
 <script id="role" type="text/html">
     {{each list as value}}
      <ul class="item list-group">
@@ -64,11 +64,11 @@
         <li class="list-group-item">
             <div class="media">
                 <div class="media-left">
-                    <img onclick="toDetail('{{value.u_id}}')" class="media-object img-rounded cd-trigger" style="width: 30px; height: 30px;border-radius:30px;"  src="{{value.user.avatar}}" />
+                    <img onclick="toDetail('{{value.u_id}}')" class="media-object img-rounded cd-trigger avatar{{value.u_id}}" style="width: 30px; height: 30px;border-radius:30px;"  src="{{value.user.avatar}}" />
                 </div>
                 <div class="media-body">
                     <input type="hidden" id="id" value="{{value}}"/>
-                    <h5 class="media-heading">{{value.user.username}}</h5>
+                    <h5 class="media-heading username{{value.u_id}}">{{value.user.username}}</h5>
                     {{if value.content.length<100}}
                     <p id="msg_p" style="font-size: small">
                         {{#value.content}}
@@ -148,13 +148,9 @@
 
 </script>
 <script>
+    var layim;
     layui.use('layim', function(){
-        var layim = layui.layim;
-        //演示自动回复
-        var autoReplay = [
-            '您好，我现在有事不在，一会再和您联系。',
-        ];
-
+        layim = layui.layim;
         //基础配置
         layim.config({
             //初始化接口
@@ -195,12 +191,80 @@
             ,chatLog: '/layui/css/modules/layim/html/chatlog.html' //聊天记录页面地址，若不开启，剔除该项即可
             /*,copyright:true*/
         });
-
+        layim.on('sendMessage', function(data) {
+            var mine = data.mine; //包含我发送的消息及我的信息
+            socket.send(JSON.stringify({
+                type:{
+                    type:data.to.type
+                },
+                mine:data.mine,
+                to:data.to
+            }));
+        })
         $('.site-demo-layim').on('click', function(){
             var type = $(this).data('type');
             active[type] ? active[type].call(this) : '';
         });
     });
+</script>
+<script th:inline="javascript">
+
+    //连接成功时触发
+    var userid = [[${user.id}]];
+    var username = [[${user.username}]];
+    var useravatar = [[${user.avatar}]];
+    var socket = new WebSocket('ws://' + window.location.host + '/websocket/'+userid);
+    socket.onopen = function(){
+
+    };
+
+    //监听收到的消息
+    socket.onmessage = function(res){
+        console.info(res);
+        res = JSON.parse(res.data);
+        if(res.emit === 'friend'||res.emit === 'group'){
+            layim.getMessage(res.data); //res.data即你发送消息传递的数据（阅读：监听发送的消息）
+        }
+    };
+    //添加好友
+    function addFriend(descUserId) {
+        layim.add({
+            type: 'friend'
+            ,username: username
+            ,avatar: useravatar
+            ,submit: function(group, remark, index){
+                //更多情况下，一般是传递一个JSON
+                socket.send(JSON.stringify({
+                    type: 'add' //随便定义，用于在服务端区分消息类型
+                    ,data: {
+                        msg:group,
+                        reark:remark
+                    }
+                }));
+                layer.msg('好友申请已发送，请等待对方确认', {
+                    icon: 1
+                    ,shade: 0.5
+                }, function(){
+                    layer.close(index);
+                });
+            }
+        });
+    }
+    function setFriendGroup(descUserId) {
+        layim.setFriendGroup({
+            type: 'friend'
+            ,username: 'xxx' //好友昵称，若申请加群，参数为：groupname
+            ,avatar: 'a.jpg' //头像
+            ,group: layim.cache().friend //获取好友列表数据
+            ,submit: function(group, index){
+                //一般在此执行Ajax和WS，以通知对方已经同意申请
+                //……
+
+                //同意后，将好友追加到主面板
+                layim.addList(data); //见下文
+            }
+        });
+    }
 </script>
 </body>
 </html>

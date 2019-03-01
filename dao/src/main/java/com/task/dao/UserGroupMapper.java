@@ -23,4 +23,5 @@ public interface UserGroupMapper extends BaseMapper<UserGroup> {
     void addGroup(Map params);
     void addMember(Map params);
     boolean isFriend(@Param("user_id") Integer user_id,@Param("u_id") Integer u_id);
+    List<Integer> getGroupMembersById(@Param("id")Object id);
 }

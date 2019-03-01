@@ -5,6 +5,7 @@ import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.github.miemiedev.mybatis.paginator.domain.PageList;
 import com.task.pojo.DataGridModel;
 import com.task.pojo.DynamicMsg;
+import com.task.pojo.User;
 import com.task.service.DynamicMsgService;
 import com.task.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +33,7 @@ public class PlatformController extends BaseController {
     //跳转到主页
     @RequestMapping("/index/{id}")
     public ModelAndView index(ModelMap modelMap, @PathVariable Integer id){
-        modelMap.addAttribute("id",id);
-        //User objectById = userService.getObjectById("");
+        modelMap.addAttribute("user",userService.getObjectById(id));
         return new ModelAndView("platform",modelMap);
     }
     //弹出到详情页

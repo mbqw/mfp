@@ -95,6 +95,7 @@
                     if (data.success){
                         var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
                         parent.layer.close(index);
+                        window.parent.location.reload(true);
                     } else{
                         layer.msg(data.info, {icon: 5});
                     }

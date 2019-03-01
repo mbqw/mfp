@@ -106,8 +106,6 @@
         //监听行工具事件
         table.on('tool(test)', function(obj){
             var data = obj.data;
-            console.log(obj)
-            /*console.log(data)*/
             if(obj.event === 'del'){
                 layer.confirm('确定取消收藏吗', function(index){
                     layer.close(index);
@@ -132,6 +130,8 @@
             dataType:"JSON",
             url:'/msg/update',
             success:function (data) {
+                window.parent.$("#star"+id).children("span").removeClass("glyphicon-star");
+                window.parent.$("#star"+id).children("span").addClass("glyphicon-star-empty");
                 layer.alert(data.info)
             }
         });

@@ -24,10 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 @RequestMapping("/msg")
@@ -89,6 +86,13 @@ public class MsgController extends BaseController{
         try {
             msg.setContent(msg.getContent().replaceAll("(http(s?)://)[a-zA-Z0-9.:]*",""));
             dynamicMsgService.addObject(msg);
+            try {
+                List list = new ArrayList();
+                list.add(dynamicMsgService.getObjectById(msg.getId()));
+                map.put("rows", list);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             map.put("success", true);
         } catch (Exception e) {
             String[] img = msg.getImg();

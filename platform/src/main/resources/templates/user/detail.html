@@ -125,7 +125,7 @@
 <input type="hidden" id="u_id" th:value="${user.id}">
 <div class="demo">
     <button th:if="${user.id != user_id && isFriend ==false}" class="layui-btn layui-btn-sm" style="background-color: #692f6c;margin-left: 10px"
-            th:onclick="|addFriend(${user_id},${user.id})|">
+            th:onclick="|addFriend(${user.id})|">
         <i class="layui-icon layui-icon-add-1"></i>
         添加好友
     </button>
@@ -240,42 +240,8 @@
 
 </script>
 <script th:inline="javascript">
-    function addFriend(user_id,u_id) {
-        layim.add({
-            type: 'friend'
-            ,username: [[${user.username}]]
-            ,avatar: [[${user.avatar}]]
-            ,submit: function(group, remark, index){
-                console.info(group);
-                console.info(remark);
-                console.info(index);
-                layer.msg('好友申请已发送，请等待对方确认', {
-                    icon: 1
-                    ,shade: 0.5
-                }, function(){
-                    layer.close(index);
-                });
-
-                //通知对方
-                /*
-                $.post('/im-applyFriend/', {
-                  uid: info.uid
-                  ,from_group: group
-                  ,remark: remark
-                }, function(res){
-                  if(res.status != 0){
-                    return layer.msg(res.msg);
-                  }
-                  layer.msg('好友申请已发送，请等待对方确认', {
-                    icon: 1
-                    ,shade: 0.5
-                  }, function(){
-                    layer.close(index);
-                  });
-                });
-                */
-            }
-        });
+    function addFriend(u_id) {
+        window.parent.addFriend(u_id);
     }
 </script>
 <script>

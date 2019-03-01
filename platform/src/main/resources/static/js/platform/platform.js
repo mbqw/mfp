@@ -67,6 +67,8 @@ function msg_star(id,t) {
                 if (star ==1){
                     $(t).children("span").removeClass("glyphicon-star-empty");
                     $(t).children("span").addClass("glyphicon-star");
+                    window.parent.$("#star"+id).children("span").removeClass("glyphicon-star-empty");
+                    window.parent.$("#star"+id).children("span").addClass("glyphicon-star");
                     layer.tips('已收藏', '#star'+id,{
                         tips: [1, '#00bfff'],
                         time:1000
@@ -74,6 +76,8 @@ function msg_star(id,t) {
                 } else{
                     $(t).children("span").removeClass("glyphicon-star");
                     $(t).children("span").addClass("glyphicon-star-empty");
+                    window.parent.$("#star"+id).children("span").removeClass("glyphicon-star");
+                    window.parent.$("#star"+id).children("span").addClass("glyphicon-star-empty");
                     layer.tips('取消收藏', '#star'+id,{
                         tips: [1, '#00bfff'],
                         time:1000
@@ -174,10 +178,6 @@ function userStars() {
         fixed: false, //不固定
         maxmin: true,
         content: '/msg/toList/'+$("#user_id").val(),
-        cancel: function(index, layero){
-            layer.close(index);
-            window.location.href="/platform/index/"+$("#user_id").val();
-        }
     });
 }
 //user详情页
@@ -193,13 +193,9 @@ function toDetail(u_id) {
         resize:false,
         maxmin: true,
         content: '/user/toDetail/'+$("#user_id").val()+'/'+u_id,
-        cancel: function(index, layero){
-            layer.close(index);
-            window.location.href="/platform/index/"+$("#user_id").val();
-        }
     });
 }
-//换头像
+//跳转到换头像页面
 function changeAvatar(user_id) {
     var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
     parent.layer.close(index);
@@ -211,6 +207,20 @@ function changeAvatar(user_id) {
         content: '/user/toAvatar/'+user_id,
 
     });
+}
+//主页面头像更改
+function parentChangeAvatar(id,src) {
+    $(".avatar"+id).each(function () {
+        $(this).attr("src",src+"?"+new Date());
+    })
+    $("#layui-layim-close").children("img").attr("src",src+"?"+new Date());
+}
+//主页面名称更改
+function parentChangeName(id,src) {
+    $(".username"+id).each(function () {
+        $(this).text(src);
+    })
+    $(".layui-layim-user").text(src);
 }
 //修改资料
 function toUpdate(u_id) {
@@ -245,7 +255,7 @@ function userIM() {
         content: '/im/toList/'+$("#user_id").val(),
         cancel: function(index, layero){
             layer.close(index);
-            window.location.href="/platform/index/"+$("#user_id").val();
+            window.parent.location.reload(true);
         }
     });
 }

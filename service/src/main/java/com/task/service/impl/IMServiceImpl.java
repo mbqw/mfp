@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 
 @Service("imService")
@@ -71,5 +72,10 @@ public class IMServiceImpl extends BaseServiceImpl<IMData> implements IMService 
     }
     public boolean isFriend(Integer user_id,Integer u_id){
         return mapper.isFriend(user_id,u_id);
+    }
+
+    @Override
+    public List<Integer> getGroupMembersById(Object id) {
+        return mapper.getGroupMembersById(id);
     }
 }

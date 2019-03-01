@@ -3,8 +3,12 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.task.dao.DynamicMsgMapper">
 
-    <select id="getObjectById" resultType="com.task.pojo.DynamicMsg">
-    	SELECT * FROM u_dyn_msg WHERE id=#{id}
+    <select id="getObjectById" resultMap="msg_user">
+    	SELECT msg.id,SUBSTRING(msg.content,1,300)content,msg.img,msg.ylike,msg.unlike,msg.u_id,u.username,u.avatar
+        FROM `u_dyn_msg` msg
+        INNER JOIN USER u
+        ON msg.`u_id` = u.`id`
+        WHERE msg.id = ${id}
 	</select>
 
     <insert id="addObject" parameterType="com.task.dao.DynamicMsgMapper" useGeneratedKeys="true" keyProperty="id">

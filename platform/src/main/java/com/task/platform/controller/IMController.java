@@ -175,6 +175,22 @@ public class IMController extends BaseController {
         try {
             imService.addGroup(params);
             map.put("success", true);
+            map.put("id", params.get("id"));
+        } catch (Exception e) {
+            map.put("success", false);
+            map.put("msg", "操作失败");
+            e.printStackTrace();
+        }
+        out.print(super.objectToJson(map));
+    }
+    //添加分组
+    @RequestMapping("/applyFriend")
+    public void applyFriend(HttpServletRequest request, HttpServletResponse response,@RequestParam Map params){
+        PrintWriter out = super.getOut(response);
+        Map<String, Object> map = new HashMap<String, Object>();
+        try {
+
+            map.put("success", true);
         } catch (Exception e) {
             map.put("success", false);
             map.put("msg", "操作失败");

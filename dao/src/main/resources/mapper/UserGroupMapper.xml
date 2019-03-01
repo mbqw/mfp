@@ -106,6 +106,10 @@
         ON g.id = m.group_id
         WHERE g.u_id=#{user_id,jdbcType=INTEGER} AND g.type=0 AND m.user_id = #{u_id,jdbcType=INTEGER}
 	</select>
+    <select id="getGroupMembersById" resultType="list">
+    	SELECT user_id FROM g_members WHERE group_id = ${id}
+	</select>
+
 
 
 

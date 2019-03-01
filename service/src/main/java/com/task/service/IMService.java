@@ -4,6 +4,7 @@ import com.github.miemiedev.mybatis.paginator.domain.PageBounds;
 import com.github.miemiedev.mybatis.paginator.domain.PageList;
 import com.task.pojo.IMData;
 
+import java.util.List;
 import java.util.Map;
 
 public interface IMService extends BaseService<IMData>{
@@ -16,4 +17,5 @@ public interface IMService extends BaseService<IMData>{
     void batchDelete(Map params);
     void addGroup(Map params);
     boolean isFriend(Integer user_id,Integer u_id);
+    List<Integer> getGroupMembersById(Object id);
 }

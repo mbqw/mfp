@@ -66,8 +66,9 @@
         $('#blobSubmit').on('click', function(){
             var img = cropper.getBlob();
             var formdata = new FormData();
+            var id = $("#user_id").val();
             formdata.append("imagefile", img);
-            formdata.append("id",$("#user_id").val());
+            formdata.append("id",id);
             $.ajax({
                 url:"/user/avatar",
                 data: formdata,
@@ -80,7 +81,7 @@
                     if(data.success){
                         var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
                         parent.layer.close(index);
-                        window.location.href="/platform/index/"+$("#user_id").val();
+                        window.parent.location.reload(true);
                     }else{
                         layer.msg(data.info, function(){
                         });
