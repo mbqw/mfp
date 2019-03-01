@@ -81,16 +81,17 @@ public class FriendsWebSocket extends BaseController {
     private void group(Session session, Map<String, Map> map) throws IOException {
         Map mine = map.get("mine");
         Map to = map.get("to");
+        mine.put("fromid",mine.get("id"));
+        mine.put("id",to.get("id"));
         mine.put("mine",false);
         mine.put("type",to.get("type"));
-        mine.put("fromid",mine.get("id"));
         mine.put("timestamp",new Date());
         //发送回去的数据
         Map resMap = new HashMap();
         resMap.put("emit","group");
         resMap.put("data",mine);
         List<Integer> list = imService.getGroupMembersById(to.get("id"));
-        list.remove(list.indexOf(mine.get("id")));
+        list.remove(list.indexOf(mine.get("fromid")));
         for (Integer integer : list) {
             Session toSession = sessionMap.get(integer+"");
             if (toSession != null){

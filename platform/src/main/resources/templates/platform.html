@@ -233,9 +233,10 @@
             ,username: username
             ,avatar: useravatar
             ,submit: function(group, remark, index){
-                //更多情况下，一般是传递一个JSON
                 socket.send(JSON.stringify({
-                    type: 'add' //随便定义，用于在服务端区分消息类型
+                    type: {
+                        type:'addFriend'
+                    }
                     ,data: {
                         msg:group,
                         reark:remark
