@@ -28,8 +28,8 @@ public class UserController extends BaseController{
     @Autowired
     private IMService imService;
     //静态资源路径
-    @Value(value = "${upload_images_path}")
-    private String upload_images_path;
+    @Value(value = "${user_upload_path}")
+    private String user_upload_path;
     //跳转到主页
     @RequestMapping("/toDetail/{user_id}/{u_id}")
     public ModelAndView index(ModelMap modelMap, @PathVariable Integer user_id,@PathVariable Integer u_id){
@@ -84,7 +84,7 @@ public class UserController extends BaseController{
         Map<String, Object> map = new HashMap<String, Object>();
         try {
             if (!file.isEmpty()){
-                File dir = new File(upload_images_path+"head\\");
+                File dir = new File(user_upload_path+"head\\");
                 if (!dir.exists()){
                     dir.mkdir();
                 }

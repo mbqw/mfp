@@ -125,7 +125,7 @@
 <input type="hidden" id="u_id" th:value="${user.id}">
 <div class="demo">
     <button th:if="${user.id != user_id && isFriend ==false}" class="layui-btn layui-btn-sm" style="background-color: #692f6c;margin-left: 10px"
-            th:onclick="|addFriend(${user.id})|">
+            th:onclick="addFriend([[${user.id}]],[[${user.username}]],[[${user.avatar}]])">
         <i class="layui-icon layui-icon-add-1"></i>
         添加好友
     </button>
@@ -240,8 +240,8 @@
 
 </script>
 <script th:inline="javascript">
-    function addFriend(u_id) {
-        window.parent.addFriend(u_id);
+    function addFriend(u_id,username,avatar) {
+        window.parent.addFriend(u_id,username,avatar);
     }
 </script>
 <script>

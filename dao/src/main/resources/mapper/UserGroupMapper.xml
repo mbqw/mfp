@@ -89,7 +89,7 @@
         </trim>
     </insert>
     <insert id="addMember" parameterType="map">
-        INSERT INTO g_members
+        INSERT IGNORE INTO g_members
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="u_id != null and u_id != ''">user_id,</if>
             <if test="id != null and id != ''">group_id,</if>
@@ -100,7 +100,7 @@
         </trim>
     </insert>
     <select id="isFriend" resultType="boolean">
-    	SELECT COUNT(id)
+    	SELECT COUNT(g.id)
         FROM u_group g
         INNER JOIN g_members m
         ON g.id = m.group_id
@@ -109,7 +109,117 @@
     <select id="getGroupMembersById" resultType="int">
     	SELECT user_id FROM g_members WHERE group_id = ${id}
 	</select>
+    <select id="disAgreeMsgbox" resultType="int">
+    	SELECT count(*) FROM u_msgbox WHERE descUid = ${id} and agree = 0
+	</select>
+    <insert id="addMsgbox" parameterType="map">
+        INSERT INTO u_msgbox
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="srcUid != null and srcUid != ''">srcUid,</if>
+            <if test="descUid != null and descUid != ''">descUid,</if>
+            <if test="type != null and type != ''">type,</if>
+            <if test="content != null and content != ''">content,</if>
+            <if test="agree != null and agree != ''">agree,</if>
+            <if test="srcGid != null and srcGid != ''">srcGid,</if>
+            <if test="descGid != null and descGid != ''">descGid,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="srcUid != null and srcUid != ''">#{srcUid,jdbcType=INTEGER},</if>
+            <if test="descUid != null and descUid != ''">#{descUid,jdbcType=INTEGER},</if>
+            <if test="type != null and type != ''">#{type,jdbcType=INTEGER},</if>
+            <if test="content != null and content != ''">#{content,jdbcType=VARCHAR},</if>
+            <if test="agree != null and agree != ''">#{agree,jdbcType=INTEGER},</if>
+            <if test="srcGid != null and srcGid != ''">#{srcGid,jdbcType=INTEGER},</if>
+            <if test="descGid != null and descGid != ''">#{descGid,jdbcType=INTEGER},</if>
+        </trim>
+    </insert>
+    <resultMap id="msgbox_map" type="map">
+        <result property="createTime" column="createTime" javaType="string" jdbcType="TIMESTAMP"></result>
+        <result property="respTime" column="respTime" javaType="string" jdbcType="TIMESTAMP"></result>
+    </resultMap>
+    <select id="findMsgboxPageList" resultMap="msgbox_map">
+    	SELECT (@i:=@i+1) i,t.* FROM (SELECT @i:=0) AS i ,
+        (
+        (SELECT m.*,u.username,u.avatar FROM u_msgbox m
+        INNER JOIN USER u ON u.id = m.srcUid
+        WHERE m.descUid = ${id}  )
+        UNION
+        (SELECT m.*,u.username,u.avatar FROM u_msgbox m
+        INNER JOIN USER u ON u.id = m.descUid
+        WHERE m.srcUid = ${id} )ORDER BY createTime DESC
+        ) AS t
 
+	</select>
+    <update id="updateMsgbox" >
+        UPDATE u_msgbox
+        <set>
+        <if test="agree != null and agree != ''">agree= #{agree},</if>
+        <if test="descGid != null and descGid != ''">descGid= #{descGid},</if>
+        <if test="respTime != null and respTime != ''">respTime= #{respTime},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    <select id="getMembers" resultType="map">
+        SELECT u.id,u.username,u.avatar,u.sign FROM g_members g
+        INNER JOIN USER u
+        ON g.user_id = u.id
+        WHERE g.group_id = ${id}
+    </select>
+    <insert id="addChat" parameterType="map">
+        INSERT INTO u_chat
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="content != null and content != ''">content,</if>
+            <if test="srcUid != null and srcUid != ''">srcUid,</if>
+            <if test="descUid != null and descUid != ''">descUid,</if>
+            <if test="descGid != null and descGid != ''">descGid,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="createTime != null and createTime != ''">createTime,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="content != null and content != ''">#{content,jdbcType=VARCHAR},</if>
+            <if test="srcUid != null and srcUid != ''">#{srcUid,jdbcType=INTEGER},</if>
+            <if test="descUid != null and descUid != ''">#{descUid,jdbcType=INTEGER},</if>
+            <if test="descGid != null and descGid != ''">#{descGid,jdbcType=INTEGER},</if>
+            <if test="status != null and status != ''">#{status,jdbcType=INTEGER},</if>
+            <if test="createTime != null and createTime != ''">#{createTime,jdbcType=VARCHAR},</if>
+        </trim>
+    </insert>
+    <update id="updateChatStatus" >
+        UPDATE u_chat
+        <set>
+            <if test="status != null and status != ''">status= #{status},</if>
+        </set>
+        WHERE srcUid = #{srcUid} and descUid = #{descUid} and status = 0
+    </update>
+    <select id="getOfflineChat" resultMap="msgbox_map">
+        SELECT u.username,u.avatar,u.id fromid ,u.id,c.content,c.createTime AS 'timestamp', 'friend' AS 'type',false AS 'mine'
+        FROM u_chat c
+        INNER JOIN USER u
+        ON c.srcUid = u.id
+        WHERE c.descUid = #{id} AND c.status = 0
+    </select>
+    <select id="findChatlogPageList" resultMap="msgbox_map">
+        SELECT c.*,u.username,u.avatar FROM u_chat c
+        INNER JOIN USER u
+        ON c.srcUid = u.id
+        WHERE
+        <if test="descUid != null and descUid != ''">
+            (c.srcUid = #{srcUid} AND c.descUid = #{descUid}) OR (c.srcUid = #{descUid} AND c.descUid = #{srcUid})
+        </if>
+        <if test="descGid != null and descGid != ''">
+            descGid = #{descGid}
+        </if>
+    </select>
+    <select id="getChatlogCount" parameterType="map" resultType="int">
+        select count(*) from u_chat c
+        WHERE
+        <if test="descUid != null and descUid != ''">
+            (c.srcUid = #{srcUid} AND c.descUid = #{descUid}) OR (c.srcUid = #{descUid} AND c.descUid = #{srcUid})
+        </if>
+        <if test="descGid != null and descGid != ''">
+            descGid = #{descGid}
+        </if>
+    </select>
 
 
 

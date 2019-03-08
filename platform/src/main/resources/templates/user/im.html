@@ -29,7 +29,7 @@
 <script type="text/html" id="toolbarDemo">
     <button class="layui-btn layui-btn-sm" lay-event="batchAddGroup">
         <i class="layui-icon layui-icon-add-circle"></i>
-        邀请到群
+        邀请进群
     </button>
     <button class="layui-btn layui-btn-sm" lay-event="batchDelete">
         <i class="layui-icon layui-icon-delete"></i>
@@ -45,6 +45,12 @@
         <div id="moveto" class="layui-input-inline " style="width: 200px;margin-left: 16px;margin-top: 10px;display: none">
             <select id="groupId2" name="groupId" lay-search="">
                 <option value="">请选择分组</option>
+
+            </select>
+        </div>
+        <div id="addGroup" class="layui-input-inline " style="width: 200px;margin-left: 16px;margin-top: 10px;display: none">
+            <select id="groupId3" lay-search="">
+                <option value="">请选择群</option>
 
             </select>
         </div>
@@ -128,11 +134,15 @@
             ,defaultToolbar: ['print', 'exports']
             ,done: function(res, curr, count){
                 var data = res.groupList;
+                var data2 = res.groupList2;
                 data.forEach(function (item,index) {
                     $("#groupId").append("<option value='"+item.id+"'>"+item.groupname+"</option>");
                     $("#groupId2").append("<option value='"+item.id+"'>"+item.groupname+"</option>");
-                    form.render();
                 })
+                data2.forEach(function (item,index) {
+                    $("#groupId3").append("<option value='"+item.id+"'>"+item.groupname+"</option>");
+                })
+                form.render();
             }
         });
         table.render({
@@ -169,7 +179,6 @@
         //头工具栏事件
         table.on('toolbar(friends)', function(obj){
             var checkStatus = table.checkStatus(obj.config.id);
-            console.info(obj);
             var data = checkStatus.data;
             switch(obj.event){
                 case 'batchAddGroup':
@@ -181,26 +190,40 @@
                         type: 1,
                         title:"邀请好友至",
                         shade:false,
-                        area:['230px','80%'],
-                        content: $('#moveto'),
+                        area:['230px','70%'],
+                        content: $('#addGroup'),
                         btn: ['确定'],
                         yes: function(index, layero){
-                            var groupId  = $("#groupId2").val();
-                            if (groupId != '' && groupId!=data.id){
+                            var groupId  = $("#groupId3").val();
+                            if (groupId != ''){
+                                var user_group_arr = [];
+                                var user_name_arr = [];
+                                var id_name = {};
+                                data.forEach(function (item,index2) {
+                                    user_group_arr.push(item.uid);
+                                    id_name[item.uid] = item.username;
+                                })
                                 $.ajax({
                                     type:"POST",
                                     data:{
-                                        uid:data.uid,
-                                        oldid:data.id,
-                                        newid:groupId,
+                                        id:groupId,
+                                        ids:user_group_arr.join(","),
                                     },
                                     dataType:"JSON",
-                                    url:'/im/moveFriend',
+                                    url:'/im/addMember',
                                     success:function (data) {
                                         if (data.success){
                                             layer.close(index);
                                             table.reload('friends',{
                                             });
+                                            layer.msg('操作成功', {icon: 1});
+
+                                           if (data.list.length>0){
+                                               data.list.forEach(function (item,index2) {
+                                                   user_name_arr.push(id_name[item]);
+                                               })
+                                               window.parent.addGroup(groupId,user_name_arr.join(","));
+                                           }
                                         } else{
                                             layer.alert(data.msg);
                                         }
@@ -338,7 +361,7 @@
                     type: 1,
                     title:"移动好友至",
                     shade:false,
-                    area:['230px','80%'],
+                    area:['230px','70%'],
                     content: $('#moveto'),
                     btn: ['确定'],
                     yes: function(index, layero){

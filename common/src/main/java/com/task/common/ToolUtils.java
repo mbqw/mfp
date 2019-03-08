@@ -56,7 +56,6 @@ public class ToolUtils {
 
 
     public static void main(String[] args) {
-
         Map<String, Object> map = new TreeMap<String, Object>();
 
         map.put("123", "123");

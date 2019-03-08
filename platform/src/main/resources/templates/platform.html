@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>欢迎</title>
+    <title>MFP</title>
+    <link rel="icon" href="/images/logo.ico" type="img/x-ico" />
     <th:block th:replace="/common::css2">
     </th:block>
     <style>
@@ -162,17 +163,19 @@
             }
             //查看群员接口
             ,members: {
-                url: '/getMembers.json'
-                ,data: {}
+                url: '/im/getMembers'
+                ,data: {
+
+                }
             }
 
             ,uploadImage: {
-                url: '' //（返回的数据格式见下文）
-                ,type: '' //默认post
+                url: '/im/upload?type=img&id='+$("#user_id").val()
+                ,type: 'post'
             }
             ,uploadFile: {
-                url: '' //（返回的数据格式见下文）
-                ,type: '' //默认post
+                url: '/im/upload?type=file&id='+$("#user_id").val()
+                ,type: 'post'
             }
             //扩展工具栏
             /*,tool: [{
@@ -182,17 +185,67 @@
             }]*/
             ,title: '开始聊天' //自定义主面板最小化时的标题
             ,initSkin: '3.jpg' //1-5 设置初始背景
-            ,notice: true //是否开启桌面消息提醒，默认false
             ,min:true //用于设定主面板是否在页面打开时，始终最小化展现
             ,isAudio:true //开启聊天工具栏音频
             ,isVideo:true //开启聊天工具栏视频
-            ,msgbox: '/layui/css/modules/layim/html/msgbox.html' //消息盒子页面地址，若不开启，剔除该项即可
-            ,find: '/layui/css/modules/layim/html/find.html' //发现页面地址，若不开启，剔除该项即可
-            ,chatLog: '/layui/css/modules/layim/html/chatlog.html' //聊天记录页面地址，若不开启，剔除该项即可
-            /*,copyright:true*/
+            ,voice:'default.wav'
+            ,msgbox: '/layui/css/modules/layim/html/msgbox.html?id='+userid //消息盒子页面地址
+            ,chatLog: '/layui/css/modules/layim/html/chatlog.html' //聊天记录页面地址
+            /*,find: '/layui/css/modules/layim/html/find.html' //发现页面地址
+            ,copyright:true*/
         });
+        //监听layim建立就绪
+        layim.on('ready', function(res){
+            $.ajax({
+                type:"post",
+                dataType:"json",
+                url:"/im/getOfflineChat",
+                data:{
+                    id:$("#user_id").val(),
+                },
+                success:function (data) {
+                    if (data.count!=0){
+                        layim.msgbox(data.count);
+                    }
+                    data.data.forEach(function (item,index) {
+                        layim.getMessage(item);
+                        offLineId.push(item.id);
+                    });
+                }
+            });
+            socket.send(JSON.stringify({
+                type:{
+                    type:'isOnline'
+                },
+                data: {
+                    id:$("#user_id").val()
+                }
+            }));
+        });
+        var offLineId = [];
+        //聊天框切换
+        layim.on('chatChange', function(obj){
+            if ($.inArray(obj.data.id, offLineId)<0){
+                return;
+            }
+            $.ajax({
+                type:"post",
+                dataType:"json",
+                url:"/im/updateChatStatus",
+                data:{
+                    srcUid:obj.data.id,
+                    descUid:$("#user_id").val(),
+                    status:1
+                },
+                success:function (data) {
+                    if (data.success){
+
+                    }
+                }
+            })
+        });
+        //发送信息事件
         layim.on('sendMessage', function(data) {
-            var mine = data.mine; //包含我发送的消息及我的信息
             socket.send(JSON.stringify({
                 type:{
                     type:data.to.type
@@ -200,7 +253,22 @@
                 mine:data.mine,
                 to:data.to
             }));
-        })
+        });
+        //修改签名事件
+        layim.on('sign', function(value){
+            $.ajax({
+                type:"post",
+                dataType:"json",
+                url:"/user/update",
+                data:{
+                    id:$("#user_id").val(),
+                    sign:value
+                },
+                success:function (data) {
+                    layer.msg(data.info);
+                }
+            })
+        });
         $('.site-demo-layim').on('click', function(){
             var type = $(this).data('type');
             active[type] ? active[type].call(this) : '';
@@ -212,7 +280,6 @@
     //连接成功时触发
     var userid = [[${user.id}]];
     var username = [[${user.username}]];
-    var useravatar = [[${user.avatar}]];
     var socket = new WebSocket('ws://' + window.location.host + '/websocket/'+userid);
     socket.onopen = function(){
 
@@ -220,26 +287,35 @@
 
     //监听收到的消息
     socket.onmessage = function(res){
-        console.info(res);
         res = JSON.parse(res.data);
         if(res.emit === 'friend'||res.emit === 'group'){
-            layim.getMessage(res.data); //res.data即你发送消息传递的数据（阅读：监听发送的消息）
+            layim.getMessage(res.data);
+        }else if (res.emit === 'msgbox'){
+            layim.msgbox(res.count);
+        }else if (res.emit === 'addGroup'){
+            layim.getMessage(res.data);
+        }else if (res.emit === 'isOnline'){
+            $.each(res.data,function (key,value) {
+                layim.setFriendStatus(key,value);
+            });
         }
     };
     //添加好友
-    function addFriend(descUserId) {
+    function addFriend(descUserId,username,avatar) {
         layim.add({
             type: 'friend'
             ,username: username
-            ,avatar: useravatar
+            ,avatar: avatar
             ,submit: function(group, remark, index){
                 socket.send(JSON.stringify({
                     type: {
                         type:'addFriend'
                     }
                     ,data: {
-                        msg:group,
-                        reark:remark
+                        content:remark,
+                        srcUid:$("#user_id").val(),
+                        srcGid:group,
+                        descUid:descUserId
                     }
                 }));
                 layer.msg('好友申请已发送，请等待对方确认', {
@@ -251,20 +327,17 @@
             }
         });
     }
-    function setFriendGroup(descUserId) {
-        layim.setFriendGroup({
-            type: 'friend'
-            ,username: 'xxx' //好友昵称，若申请加群，参数为：groupname
-            ,avatar: 'a.jpg' //头像
-            ,group: layim.cache().friend //获取好友列表数据
-            ,submit: function(group, index){
-                //一般在此执行Ajax和WS，以通知对方已经同意申请
-                //……
-
-                //同意后，将好友追加到主面板
-                layim.addList(data); //见下文
+    function addGroup(groupId,usernames) {
+        socket.send(JSON.stringify({
+            type: {
+                type:'addGroup'
             }
-        });
+            ,data: {
+                from:username,
+                groupId:groupId,
+                usernames:usernames
+            }
+        }));
     }
 </script>
 </body>

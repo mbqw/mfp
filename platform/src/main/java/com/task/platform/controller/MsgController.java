@@ -32,8 +32,8 @@ public class MsgController extends BaseController{
     @Autowired
     private DynamicMsgService dynamicMsgService;
     //静态资源路径
-    @Value(value = "${upload_images_path}")
-    private String upload_images_path;
+    @Value(value = "${user_upload_path}")
+    private String user_upload_path;
     @Autowired
     private StarService starService;
     //跳转到主页
@@ -57,7 +57,7 @@ public class MsgController extends BaseController{
         Map<String, Object> map = new HashMap<String, Object>();
         try {
             if (!file.isEmpty()){
-                File dir = new File(upload_images_path+"msg\\"+id+"\\");
+                File dir = new File(user_upload_path+"msg\\"+id+"\\");
                 if (!dir.exists()){
                     dir.mkdir();
                 }
@@ -97,7 +97,7 @@ public class MsgController extends BaseController{
         } catch (Exception e) {
             String[] img = msg.getImg();
             for (String s : img) {
-                File file = new File(upload_images_path+s);
+                File file = new File(user_upload_path+s);
                 if (file.exists()){
                     file.delete();
                 }
