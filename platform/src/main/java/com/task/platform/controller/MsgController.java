@@ -50,6 +50,14 @@ public class MsgController extends BaseController{
         //User objectById = userService.getObjectById("");
         return new ModelAndView("/msg/list",modelMap);
     }
+    //评论
+    @RequestMapping("/toComment/{user_id}/{m_id}")
+    public ModelAndView toComment(ModelMap modelMap,@PathVariable Integer user_id,@PathVariable Integer m_id){
+        modelMap.addAttribute("user_id",user_id);
+        modelMap.addAttribute("m_id",m_id);
+        //User objectById = userService.getObjectById("");
+        return new ModelAndView("/msg/comment",modelMap);
+    }
     //上传文件
     @RequestMapping("/uploadImgs/{id}")
     public void uploadImgs(HttpServletResponse response, HttpServletRequest request, @PathVariable Integer id, MultipartFile file){
@@ -157,6 +165,33 @@ public class MsgController extends BaseController{
                     map.put("msg","无数据");
                 } else {
                     map.put("code",0);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            map.put("code", 1);
+            map.put("msg", "获取数据失败!");
+        }
+        out.print(super.objectToJson(map));
+    }
+    //获取评论分页数据
+    @RequestMapping("/getComments")
+    public void getComments(DataGridModel dataGridModel, HttpServletRequest request, HttpServletResponse response){
+        PrintWriter out = super.getOut(response);
+        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> params = dataGridModel.getQueryParams();
+        try {
+            PageBounds pageBounds = new PageBounds(dataGridModel.getPage(),dataGridModel.getRows(), Order.formString(dataGridModel.getSort() + "." + dataGridModel.getOrder()));
+            PageList<Map> pageList = dynamicMsgService.findCommentsPageList(params, pageBounds);
+            if (pageList != null) {
+                if(pageList.size() == 0){
+                    map.put("code",1);
+                    map.put("msg","无数据");
+                } else {
+                    map.put("code",0);
+                    map.put("page", pageList.getPaginator().getTotalPages());
+                    map.put("count", pageList.getPaginator().getTotalCount());
+                    map.put("data", pageList);
                 }
             }
         } catch (Exception e) {

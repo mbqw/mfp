@@ -14,4 +14,6 @@ public interface DynamicMsgMapper extends BaseMapper<DynamicMsg> {
 
     @Override
     DynamicMsg getObjectById(@Param("id") Object id);
+
+    PageList<Map> findCommentsPageList(Map<String, Object> param, PageBounds pageBounds);
 }

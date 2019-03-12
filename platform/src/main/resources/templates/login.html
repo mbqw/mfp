@@ -169,21 +169,22 @@
     function formValidate(type) {
         var myValue = $("#registerForm input[name='"+type+"']").val();
         if (type=='username'){
-            if (!/^[\u4E00-\u9FA5A-Za-z][\u4E00-\u9FA5A-Za-z0-9_]{1,11}/.test(myValue)){
+            if (!/^[\u4E00-\u9FA5A-Za-z][\u4E00-\u9FA5A-Za-z0-9_]{1,11}$/.test(myValue)){
+                alert(1);
                 $("#registerSpan1").css("display","");
                 $("#registerSpan1").text("请输入首位为汉字字母的汉字字母数字下划线组合,长度为2-12");
             }else{
                 $("#registerSpan1").css("display","none");
             }
         } else if(type=='account'){
-            if (!/^[A-Za-z][A-Za-z0-9_]{5,17}/.test(myValue)){
+            if (!(/^[A-Za-z][A-Za-z0-9_]{5,17}$/.test(myValue))){
                 $("#registerSpan2").css("display","");
                 $("#registerSpan2").text("请输入首位为字母的数字字母下划线组合,长度为6-18");
             }else{
                 $("#registerSpan2").css("display","none");
             }
         }else if(type=='password'){
-            if (!/^[A-Za-z][A-Za-z0-9_]{5,17}/.test(myValue)){
+            if (!/^[A-Za-z][A-Za-z0-9_]{5,17}$/.test(myValue)){
                 $("#registerSpan3").css("display","");
                 $("#registerSpan3").text("请输入首位为字母的数字字母下划线组合,长度为6-18");
             }else{

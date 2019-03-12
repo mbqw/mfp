@@ -97,28 +97,15 @@ function toCommont(id) {
 
 //查看评论
 function msg_comment(id) {
-    $.ajax({
-        type:"POST",
-        data:{
-            id:id
-        },
-        dataType:"JSON",
-        url:'/msg/getComment',
-        success:function (data) {
-            if (data.success){
-                layer.open({
-                    type: 1,
-                    title: false,
-                    closeBtn: 0,
-                    shadeClose: true,
-                    skin: 'contentHtml',
-                    content: "<div style='padding: 20px'>"+data.info+"</div>"
-                });
-            } else{
-                layer.msg(data.info, function(){
-                });
-            }
-        }
+    parent.layer.open({
+        title:"评论",
+        scrollbar:false,
+        anim: 5,
+        type: 2,
+        area: ['530px','100%'],
+        fixed: false, //不固定
+        maxmin: true,
+        content: '/msg/toComment/'+$("#user_id").val()+"/"+id
     });
 }
 //查看照片

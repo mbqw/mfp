@@ -47,58 +47,6 @@
 </form>
 </body>
 <script src="/layui/layui.all.js"></script>
-<script type="text/javascript" src="/js/template-simple.js"></script>
-<script id="role" type="text/html">
-    {{each list as value}}
-    <ul class="item list-group">
-        <li class="list-group-item" id="view{{value.id}}">
-            {{each value.img as index i}}
-            {{if i==0}}
-            <img class="cd-trigger" onclick="viewPhoto('{{value.id}}')" src="{{index}}" layer-src="{{index}}"/>
-            {{else}}
-            <img src="{{index}}" layer-src="{{index}}" style="display: none"/>
-            {{/if}}
-            {{/each}}
-        </li>
-        <li class="list-group-item">
-            <button id="like{{value.id}}" onclick="msg_like('{{value.id}}')" type="button" class="btn btn-default btn-xs" title="{{value.ylike}}"><span class="glyphicon glyphicon-thumbs-up"></span></button>
-            <button id="unlike{{value.id}}" onclick="msg_unlike('{{value.id}}')" type="button" class="btn btn-default btn-xs" title="{{value.unlike}}"><span class="glyphicon glyphicon-thumbs-down"></span></button>
-            <span style="margin-left: 30px">1/{{value.img.length}}</span>
-            <button id="comment{{value.id}}" onclick="msg_comment('{{value.id}}')" type="button" class="btn btn-default btn-xs pull-right" title="评论" style="margin-left: 4px"><span class="glyphicon glyphicon-comment"></span></button>
-            <button id="star{{value.id}}" onclick="msg_star('{{value.id}}',this)" type="button" class="btn btn-default btn-xs pull-right" title="{{value.star}}" >
-                {{if value.starId != null}}
-                <span class="glyphicon glyphicon-star"></span></button>
-            {{else}}
-            <span class="glyphicon glyphicon-star-empty"></span>
-            {{/if}}
-            </button>
-
-        </li>
-        <li class="list-group-item">
-            <div class="media">
-                <div class="media-left">
-                    <img onclick="toDetail('{{value.u_id}}')" class="media-object img-rounded cd-trigger" style="width: 30px; height: 30px;border-radius:30px;"  src="{{value.user.avatar}}" />
-                </div>
-                <div class="media-body">
-                    <input type="hidden" id="id" value="{{value}}"/>
-                    <h5 class="media-heading">{{value.user.username}}</h5>
-                    {{if value.content.length<100}}
-                    <p id="msg_p" style="font-size: small">
-                        {{#value.content}}
-                    </p>
-                    {{else}}
-                    <p style="font-size: small">
-                        {{#value.content}}
-                    </p>
-                    <br>
-                    <a id="msg_a" onclick="moreContent('{{value.id}}')" href="javascript:void(0)" class="msg_a">更多...</a>
-                    {{/if}}
-                </div>
-            </div>
-        </li>
-    </ul>
-    {{/each}}
-</script>
 <!--<script src="/js/jquery-2.1.1.min.js" type="text/javascript"></script>-->
 <script>
     var imgArr=new Array();

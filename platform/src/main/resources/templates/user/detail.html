@@ -234,7 +234,9 @@
         var table = layui.table;
         //转换静态表格
         table.init('test', {
-
+            done:function () {
+                $("th").hide();
+            }
         });
     });
 

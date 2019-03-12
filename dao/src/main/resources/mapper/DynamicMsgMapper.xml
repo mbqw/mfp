@@ -71,6 +71,29 @@
         WHERE s.`u_id` = #{id,jdbcType=INTEGER}
         ORDER BY m.createTime DESC
     </select>
+    <resultMap id="date_string" type="map">
+        <result column="createTime" property="createTime" jdbcType="TIMESTAMP" javaType="string"></result>
+    </resultMap>
+    <select id="findCommentsPageList" resultMap="date_string">
+        SELECT c.*,c2.hasComment,s.username srcUsername,s.avatar srcAvatar
+         FROM `dyn_msg_comment` c
+         LEFT JOIN (SELECT descUid,COUNT(descUid) hasComment FROM dyn_msg_comment WHERE descUid IS NOT NULL GROUP BY descUid) c2
+         ON c.srcUid = c2.descUid
+         INNER JOIN USER s
+         ON c.srcUid = s.id
+        WHERE c.m_id = #{id} AND c.descUid IS NULL
+    </select>
+    <select id="findCommentsFloorPageList" resultMap="date_string">
+        SELECT c.*,c2.hasComment,s.username srcUsername,s.avatar srcAvatar,d.username descUsername,d.avatar descAvatar
+         FROM `dyn_msg_comment` c
+         LEFT JOIN (SELECT descUid,COUNT(descUid) hasComment FROM dyn_msg_comment WHERE descUid IS NOT NULL GROUP BY descUid) c2
+         ON c.srcUid = c2.descUid
+         INNER JOIN USER s
+         ON c.srcUid = s.id
+         LEFT JOIN USER d
+         ON c.descUid = d.id
+        WHERE c.m_id = #{id} AND c.descUid IS NULL
+    </select>
 
     <delete id="deleteObjectById" parameterType="com.task.dao.DynamicMsgMapper">
       DELETE FROM sample where id=#{id}

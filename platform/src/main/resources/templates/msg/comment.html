@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="zh">
+<head>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <style>
+
+        .layim-msgbox{margin: 15px;}
+        .layim-msgbox li{position: relative; margin-bottom: 10px; padding: 0 130px 10px 60px; padding-bottom: 10px; line-height: 22px; border-bottom: 1px dotted #e2e2e2;}
+        .layim-msgbox .layim-msgbox-tips{margin: 0; padding: 10px 0; border: none; text-align: center; color: #999;}
+        .layim-msgbox .layim-msgbox-system{padding: 0 10px 10px 10px;}
+        .layim-msgbox li p span{padding-left: 5px; color: #999;}
+        .layim-msgbox li p em{font-style: normal; color: #FF5722;}
+
+        .layim-msgbox-avatar{position: absolute; left: 0; top: 0; width: 50px; height: 50px;}
+        .layim-msgbox-user{padding-top: 5px;}
+        .layim-msgbox-content{margin-top: 3px;}
+        .layim-msgbox .layui-btn-small{padding: 0 15px; margin-left: 5px;}
+        .layim-msgbox-btn{position: absolute; right: 0; top: 12px; color: #999;}
+    </style>
+</head>
+<body>
+<input type="hidden" id="m_id" th:value="${m_id}">
+<input type="hidden" id="user_id" th:value="${user_id}">
+<div style="padding: 15px">
+    <button class="layui-btn layui-btn" data-type="comment" id="commentCount">评论</button>
+</div>
+<ul id="comment" class="layim-msgbox"></ul>
+</body>
+<script src="/layui/layui.all.js"></script>
+<script type="text/html" id="role">
+    <li data-id="{{ d.id }}" data-srcUid="{{ d.srcUid }}">
+        <a href="" onclick="window.parent.toDetail('{{d.srcUid}}')">
+            <img src="{{ d.srcAvatar }}" class="layui-circle layim-msgbox-avatar">
+        </a>
+        <p class="layim-msgbox-user">
+            <a href="#" onclick="window.parent.toDetail('{{d.srcUid}}')">{{ d.srcUsername }}</a>
+            <span>{{ d.createTime }}</span>
+        </p>
+        <p class="layim-msgbox-content">
+            <span>{{ d.content }}</span>
+        </p>
+        <p class="layim-msgbox-btn">
+            {{# if(d.hasComment!=null){ }}
+            <button class="layui-btn layui-btn-sm layui-btn-primary" data-type="more">
+                查看回复({{d.hasComment}})
+            </button>
+            {{# } }}
+
+            <button class="layui-btn layui-btn-sm" data-type="reply">回复</button>
+        </p>
+    </li>
+    </li>
+
+</script>
+<div style="padding: 0;display: none" id="textarea_comment">
+    <textarea id="content" name="content" class="layui-textarea"></textarea>
+    <button class="layui-btn layui-btn" data-type="add" style="position: absolute; right:5px;margin-top: 5px">确定</button>
+</div>
+<script>
+    layui.use(['layedit','flow','laytpl','layer'], function(){
+        var $ = layui.jquery;
+        var flow = layui.flow;
+        var laytpl = layui.laytpl;
+        var layedit = layui.layedit;
+        var layer = layui.layer;
+        var myLayeditIndex;
+        var thispid;
+        var thisdescUid;
+        flow.load({
+            elem: '#comment'
+            ,done: function(page, next){
+                var lis = [];
+                $.ajax({
+                    type:"POST",
+                    data:{
+                        queryParams:{
+                            id:$("#m_id").val(),
+                        },
+                        rows:10,
+                        page:page,
+                    },
+                    dataType:"JSON",
+                    url:'/msg/getComments',
+                    success:function (data) {
+                        if (data.code ==0){
+                            var getTpl = role.innerHTML
+                            layui.each(data.data, function(index, item){
+                                laytpl(getTpl).render(item, function(html){
+                                    lis.push(html);
+                                });
+                            });
+                            next(lis.join(''), page < data.page);
+                            $("#commentCount").text("评论("+data.count+")");
+                        } else{
+                            layer.msg(data.msg, function(){
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        //操作
+        var active = {
+            comment:function(){
+                createEdit(null,null);
+            },
+            reply: function(othis) {
+                var li = othis.parents('li');
+                pid = li.data('id')
+                descUid = li.data('srcUid');
+                createEdit(pid,descUid);
+            },
+            add:function () {
+                addComment();
+            },
+            more:function (othis) {
+
+            }
+        }
+        function createEdit(pid,descUid) {
+            layer.open({
+                type: 1,
+                offset: 'b',
+                title: false,
+                closeBtn:0 ,
+                area:['100%','210px'],
+                shadeClose: true,
+                skin: 'contentHtml',
+                content: $("#textarea_comment")
+            });
+            myLayeditIndex = layedit.build('content',{
+                height: 120,
+                hideTool:[
+                    'image'
+                ]
+            }); //建立编辑器
+            thispid = pid;
+            thisdescUid = descUid;
+        }
+        function addComment(){
+            $.ajax({
+                type:"POST",
+                data:{
+                    pid:thispid,
+                    m_id:$("#m_id").val(),
+                    srcUid:$("#user_id").val(),
+                    descUid:thisdescUid,
+                    content:layedit.getContent(myLayeditIndex)
+                },
+                dataType:"JSON",
+                url:'/msg/addComment',
+                success:function (data) {
+                    if (data.code ==0){
+                        var getTpl = role.innerHTML
+                        layui.each(data.data, function(index, item){
+                            laytpl(getTpl).render(item, function(html){
+                                lis.push(html);
+                            });
+                        });
+                        next(lis.join(''), page < data.page);
+                    } else{
+                        layer.msg(data.msg, function(){
+                        });
+                    }
+                }
+            });
+        }
+        $('body').on('click', '.layui-btn', function(){
+            var othis = $(this), type = othis.data('type');
+            active[type] ? active[type].call(this, othis) : '';
+        });
+    })
+</script>
+</html>

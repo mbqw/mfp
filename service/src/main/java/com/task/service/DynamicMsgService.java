@@ -14,4 +14,14 @@ public interface DynamicMsgService extends BaseService<DynamicMsg> {
      * @return
      */
     PageList<DynamicMsg> findStarMsgPageList(Map<String, Object> param, PageBounds pageBounds);
+
+    /**
+     * 查询评论分页信息
+     * @param param
+     * @param pageBounds
+     * @return
+     */
+    PageList<Map> findCommentsPageList(Map<String, Object> param, PageBounds pageBounds);
+
+
 }
