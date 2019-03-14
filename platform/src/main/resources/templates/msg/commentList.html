@@ -10,15 +10,11 @@
     <link rel="stylesheet" href="/layui/css/layui.css">
 </head>
 <body>
-<input type="hidden" id="user_id" th:value="${id}">
+<input type="hidden" id="user_id" th:value="${user.id}">
 <div class="layui-tab layui-tab-card" style="margin: 10px">
     <ul class="layui-tab-title">
-        <li class="layui-this">
-            <i class="layui-icon layui-icon-friends" ></i> 好友
-        </li>
-        <li>
-            <i class="layui-icon layui-icon-group" ></i>  群组
-        </li>
+        <li class="layui-this">我的评论</li>
+        <li>回复我的</li>
     </ul>
     <div class="layui-tab-content">
         <div class="layui-tab-item layui-show">
@@ -61,9 +57,7 @@
         <div class="layui-input-inline " style="width: 200px;">
             <input id="username" type="text" placeholder="好友名称" class="layui-input">
         </div>
-        <button class="layui-btn layui-btn-sm" lay-event="friendsQuery">
-            <i class="layui-icon layui-icon-search" ></i> 搜索
-        </button>
+        <button class="layui-btn layui-btn-sm" lay-event="friendsQuery">搜索</button>
     </div>
 </script>
 <script type="text/html" id="toolbarDemo2">
@@ -86,9 +80,7 @@
         <div class="layui-input-inline " style="width: 200px;">
             <input id="groupname" type="text" placeholder="群组名称" class="layui-input">
         </div>
-        <button class="layui-btn layui-btn-sm" lay-event="groupsQuery">
-            <i class="layui-icon layui-icon-search" ></i> 搜索
-        </button>
+        <button class="layui-btn layui-btn-sm" lay-event="groupsQuery">搜索</button>
     </div>
 </script>
 
@@ -224,7 +216,7 @@
                                             layer.close(index);
                                             table.reload('friends',{
                                             });
-                                            layer.msg('操作成功,已入群的好友不会重复邀请', {icon: 1});
+                                            layer.msg('操作成功', {icon: 1});
 
                                            if (data.list.length>0){
                                                data.list.forEach(function (item,index2) {

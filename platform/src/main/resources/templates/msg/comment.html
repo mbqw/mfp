@@ -4,7 +4,6 @@
 <head>
     <link rel="stylesheet" href="/layui/css/layui.css">
     <style>
-
         .layim-msgbox{margin: 15px;}
         .layim-msgbox li{position: relative; margin-bottom: 10px; padding: 0 130px 10px 60px; padding-bottom: 10px; line-height: 22px; border-bottom: 1px dotted #e2e2e2;}
         .layim-msgbox .layim-msgbox-tips{margin: 0; padding: 10px 0; border: none; text-align: center; color: #999;}
@@ -21,15 +20,21 @@
 </head>
 <body>
 <input type="hidden" id="m_id" th:value="${m_id}">
-<input type="hidden" id="user_id" th:value="${user_id}">
+<input type="hidden" id="user_id" th:value="${user.id}">
+<input type="hidden" id="username" th:value="${user.username}">
+<input type="hidden" id="avatar" th:value="${user.avatar}">
 <div style="padding: 15px">
-    <button class="layui-btn layui-btn" data-type="comment" id="commentCount">评论</button>
+    <button class="layui-btn layui-btn" data-type="comment">评论
+        (<span id="commentCount"></span>)
+    </button>
+    <button class="layui-btn layui-btn" data-type="sort">倒序查看</button>
+    <hr>
 </div>
 <ul id="comment" class="layim-msgbox"></ul>
 </body>
 <script src="/layui/layui.all.js"></script>
 <script type="text/html" id="role">
-    <li data-id="{{ d.id }}" data-srcUid="{{ d.srcUid }}">
+    <li data-id="{{ d.id }}" data-srcuid="{{ d.srcUid }}" data-isopen="0" data-srcusername="{{ d.srcUsername }}">
         <a href="" onclick="window.parent.toDetail('{{d.srcUid}}')">
             <img src="{{ d.srcAvatar }}" class="layui-circle layim-msgbox-avatar">
         </a>
@@ -43,15 +48,38 @@
         <p class="layim-msgbox-btn">
             {{# if(d.hasComment!=null){ }}
             <button class="layui-btn layui-btn-sm layui-btn-primary" data-type="more">
-                查看回复({{d.hasComment}})
+                查看回复(<span style="padding: 0" id='floorCount{{d.id}}'>{{ d.hasComment }}</span>)
+            </button>
+            {{# } else{ }}
+            <button class="layui-btn layui-btn-sm layui-btn-primary" data-type="more" style="display: none">
+                查看回复(<span style="padding: 0" id='floorCount{{d.id}}'>0</span>)
             </button>
             {{# } }}
-
             <button class="layui-btn layui-btn-sm" data-type="reply">回复</button>
         </p>
-    </li>
+        <div >
+            <ul id="floor{{ d.id }}"></ul>
+        </div>
     </li>
 
+</script>
+<script type="text/html" id="floor">
+    <li data-id="{{ d.pid }}" data-srcuid="{{ d.srcUid }}" data-srcusername="{{ d.srcUsername }}">
+        <a href="" onclick="window.parent.toDetail('{{d.srcUid}}')">
+            <img src="{{ d.srcAvatar }}" class="layui-circle layim-msgbox-avatar" style="width: 30px;height: 30px;left: 10px; top: 15px;">
+        </a>
+        <p class="layim-msgbox-user">
+            <a href="#" onclick="window.parent.toDetail('{{d.srcUid}}')">{{ d.srcUsername }}</a>
+            <span>{{ d.createTime }}</span>
+        </p>
+        <p class="layim-msgbox-content">
+            回复 {{ d.descUsername }} :
+            <span>{{ d.content }}</span>
+        </p>
+        <p class="layim-msgbox-btn">
+            <button class="layui-btn layui-btn-xs" data-type="reply">回复</button>
+        </p>
+    </li>
 </script>
 <div style="padding: 0;display: none" id="textarea_comment">
     <textarea id="content" name="content" class="layui-textarea"></textarea>
@@ -67,8 +95,11 @@
         var myLayeditIndex;
         var thispid;
         var thisdescUid;
+        var mylayerIndex;
+        var descUsername;
         flow.load({
             elem: '#comment'
+            ,isAuto:true
             ,done: function(page, next){
                 var lis = [];
                 $.ajax({
@@ -76,8 +107,9 @@
                     data:{
                         queryParams:{
                             id:$("#m_id").val(),
+                            sort:'asc'
                         },
-                        rows:10,
+                        rows:12,
                         page:page,
                     },
                     dataType:"JSON",
@@ -91,10 +123,12 @@
                                 });
                             });
                             next(lis.join(''), page < data.page);
-                            $("#commentCount").text("评论("+data.count+")");
+                            $("#commentCount").text(data.count);
                         } else{
+                            next(lis.join(''), page < data.page);
                             layer.msg(data.msg, function(){
                             });
+                            $("#commentCount").text(0);
                         }
                     }
                 });
@@ -107,19 +141,112 @@
             },
             reply: function(othis) {
                 var li = othis.parents('li');
-                pid = li.data('id')
-                descUid = li.data('srcUid');
+                var pid = li.data('id')
+                var descUid = li.data('srcuid');
+                descUsername = li.data('srcusername');
                 createEdit(pid,descUid);
             },
             add:function () {
                 addComment();
             },
             more:function (othis) {
-
+                var li = othis.parents('li');
+                var pid = li.data('id');
+                var isopen = li.attr('data-isopen');
+                if (isopen != '0'){
+                    li.attr('data-isopen',0);
+                    $("#floor"+pid).empty();
+                    return;
+                }else{
+                    li.attr('data-isopen',1);
+                }
+                flow.load({
+                    elem: '#floor'+pid
+                    ,isAuto:false
+                    ,end:' '
+                    ,done: function(page, next){
+                        var lis = [];
+                        $.ajax({
+                            type:"POST",
+                            data:{
+                                queryParams:{
+                                    pid:pid,
+                                },
+                                rows:10,
+                                page:page,
+                            },
+                            dataType:"JSON",
+                            url:'/msg/getCommentsFloor',
+                            success:function (data) {
+                                if (data.code ==0){
+                                    var getTpl = floor.innerHTML
+                                    layui.each(data.data, function(index, item){
+                                        laytpl(getTpl).render(item, function(html){
+                                            lis.push(html);
+                                        });
+                                    });
+                                    next(lis.join(''), page < data.page);
+                                } else{
+                                    layer.msg(data.msg, function(){
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+            },
+            sort:function (othis) {
+                $("#comment").empty();
+                if (othis.text()=='倒序查看'){
+                    init('desc');
+                    othis.text('正序查看');
+                } else{
+                    init('asc');
+                    othis.text('倒序查看');
+                }
             }
         }
+        function init(sort) {
+            flow.load({
+                elem: '#comment'
+                ,isAuto:true
+                ,done: function(page, next){
+                    var lis = [];
+                    $.ajax({
+                        type:"POST",
+                        data:{
+                            queryParams:{
+                                id:$("#m_id").val(),
+                                sort:sort
+                            },
+                            rows:12,
+                            page:page,
+                        },
+                        dataType:"JSON",
+                        url:'/msg/getComments',
+                        success:function (data) {
+                            if (data.code ==0){
+
+                                var getTpl = role.innerHTML
+                                layui.each(data.data, function(index, item){
+                                    laytpl(getTpl).render(item, function(html){
+                                        lis.push(html);
+                                    });
+                                });
+                                next(lis.join(''), page < data.page);
+                                $("#commentCount").text(data.count);
+                            } else{
+                                next(lis.join(''), page < data.page);
+                                layer.msg(data.msg, function(){
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        }
         function createEdit(pid,descUid) {
-            layer.open({
+            mylayerIndex = layer.open({
                 type: 1,
                 offset: 'b',
                 title: false,
@@ -146,21 +273,40 @@
                     m_id:$("#m_id").val(),
                     srcUid:$("#user_id").val(),
                     descUid:thisdescUid,
-                    content:layedit.getContent(myLayeditIndex)
+                    content:layedit.getContent(myLayeditIndex),
+                    srcUsername: $("#username").val(),
+                    srcAvatar:$("#avatar").val(),
+                    descUsername:descUsername
                 },
                 dataType:"JSON",
                 url:'/msg/addComment',
                 success:function (data) {
-                    if (data.code ==0){
-                        var getTpl = role.innerHTML
-                        layui.each(data.data, function(index, item){
-                            laytpl(getTpl).render(item, function(html){
-                                lis.push(html);
-                            });
+                    if (data.success){
+                        if (thispid == null || thispid == '') {
+                            $("#commentCount").text(Number($("#commentCount").text())+1);
+                            var myEle = $("#comment").children("div");
+                            if (myEle.text()=='没有更多了'){
+                                var getTpl = role.innerHTML
+                                laytpl(getTpl).render(data.data, function(html){
+                                    myEle.before(html);
+                                });
+                            }
+                        }else{
+                            $("#floorCount"+thispid).text(Number($("#floorCount"+thispid).text())+1)
+                            $("#floorCount"+thispid).parent("button").css("display","");
+                            var myEle = $("#floor"+thispid).children("div");
+                            if (myEle.length > 0 && myEle.text()==' '){
+                                var getTpl = floor.innerHTML
+                                laytpl(getTpl).render(data.data, function(html){
+                                    myEle.before(html);
+                                });
+                            }
+                        }
+                        layer.close(mylayerIndex);
+                        layer.msg(data.info, function(){
                         });
-                        next(lis.join(''), page < data.page);
                     } else{
-                        layer.msg(data.msg, function(){
+                        layer.msg(data.info, function(){
                         });
                     }
                 }

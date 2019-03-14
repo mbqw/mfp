@@ -25,11 +25,21 @@
 <!--菜单-->
 <div class="content-menu">
     <ul>
-        <li onclick="addMsg()">发布</li>
-        <li onclick="userStars()">收藏</li>
-        <li onclick="userIM()">好友</li>
-        <li onclick="location.reload(true);">主页</li>
-        <li th:onclick="|toDetail(${user.id})|">个人</li>
+        <li onclick="addMsg()" title="发布动态">
+            <i class="layui-icon layui-icon-add-circle-fine" style="font-size: 50px;"></i>
+        </li>
+        <li onclick="userStars()" title="我的收藏">
+            <i class="layui-icon layui-icon-star" style="font-size: 50px;"></i>
+        </li>
+        <li onclick="userIM()" title="我的好友">
+            <i class="layui-icon layui-icon-user" style="font-size: 50px;"></i>
+        </li>
+        <!--<li onclick="comments()" title="评论">
+        <i class="layui-icon layui-icon-reply-fill" ></i>
+        </li>-->
+        <li th:onclick="|toDetail(${user.id})|" title="个人信息">
+            <i class="layui-icon layui-icon-username" style="font-size: 50px;"></i>
+        </li>
     </ul>
 </div>
 <!--内容-->

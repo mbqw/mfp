@@ -191,14 +191,16 @@
         <li class="list-group-item">
             <button id="like{{value.id}}" onclick="msg_like('{{value.id}}')" type="button" class="btn btn-default btn-xs" title="{{value.ylike}}"><span class="glyphicon glyphicon-thumbs-up"></span></button>
             <button id="unlike{{value.id}}" onclick="msg_unlike('{{value.id}}')" type="button" class="btn btn-default btn-xs" title="{{value.unlike}}"><span class="glyphicon glyphicon-thumbs-down"></span></button>
-            <span style="margin-left: 130px">1/{{value.img.length}}</span>
-            <button id="star{{value.id}}" onclick="msg_star('{{value.id}}',this)" type="button" class="btn btn-default btn-xs pull-right" title="{{value.star}}">
+            <span style="margin-left: 30px">1/{{value.img.length}}</span>
+            <button id="comment{{value.id}}" onclick="msg_comment('{{value.id}}')" type="button" class="btn btn-default btn-xs pull-right" title="评论" style="margin-left: 4px"><span class="glyphicon glyphicon-comment"></span></button>
+            <button id="star{{value.id}}" onclick="msg_star('{{value.id}}',this)" type="button" class="btn btn-default btn-xs pull-right" title="{{value.star}}" >
                 {{if value.starId != null}}
                 <span class="glyphicon glyphicon-star"></span></button>
             {{else}}
             <span class="glyphicon glyphicon-star-empty"></span>
             {{/if}}
             </button>
+
         </li>
         <li class="list-group-item">
             <div class="media">

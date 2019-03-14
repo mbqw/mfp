@@ -16,4 +16,6 @@ public interface DynamicMsgMapper extends BaseMapper<DynamicMsg> {
     DynamicMsg getObjectById(@Param("id") Object id);
 
     PageList<Map> findCommentsPageList(Map<String, Object> param, PageBounds pageBounds);
+    PageList<Map> findCommentsFloorPageList(Map<String, Object> param, PageBounds pageBounds);
+    void addComment(Map map);
 }

@@ -44,4 +44,10 @@ public class DynamicMsgServiceImpl extends BaseServiceImpl<DynamicMsg> implement
     public PageList<Map> findCommentsPageList(Map<String, Object> param, PageBounds pageBounds){
         return mapper.findCommentsPageList(param,pageBounds);
     }
+    public PageList<Map> findCommentsFloorPageList(Map<String, Object> param, PageBounds pageBounds){
+        return mapper.findCommentsFloorPageList(param,pageBounds);
+    }
+    public void addComment(Map map){
+        mapper.addComment(map);
+    }
 }

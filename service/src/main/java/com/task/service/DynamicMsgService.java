@@ -22,6 +22,7 @@ public interface DynamicMsgService extends BaseService<DynamicMsg> {
      * @return
      */
     PageList<Map> findCommentsPageList(Map<String, Object> param, PageBounds pageBounds);
+    PageList<Map> findCommentsFloorPageList(Map<String, Object> param, PageBounds pageBounds);
 
-
+    void addComment(Map map);
 }

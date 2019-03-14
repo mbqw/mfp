@@ -90,29 +90,38 @@ function msg_star(id,t) {
         }
     });
 }
-
-function toCommont(id) {
-
-}
-
 //查看评论
 function msg_comment(id) {
     parent.layer.open({
         title:"评论",
         scrollbar:false,
+        offset:'l',
         anim: 5,
         type: 2,
-        area: ['530px','100%'],
+        area: ['600px','100%'],
         fixed: false, //不固定
         maxmin: true,
         content: '/msg/toComment/'+$("#user_id").val()+"/"+id
+    });
+}
+//我的评论
+function comments() {
+    parent.layer.open({
+        title:"评论",
+        scrollbar:false,
+        anim: 5,
+        type: 2,
+        area: ['70%','90%'],
+        fixed: false, //不固定
+        maxmin: true,
+        content: '/msg/toCommentList/'+$("#user_id").val()
     });
 }
 //查看照片
 function viewPhoto(id) {
     layer.photos({
         photos: '#view'+id
-        ,anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+        ,anim: 5
     });
 }
 //显示更多的信息
