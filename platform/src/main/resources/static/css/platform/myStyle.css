@@ -64,13 +64,13 @@
     transition-duration:0.5s;
 }
 .content-menu ul li:hover{
-    cursor: pointer;
-    transform:scale(1.2);
-    -webkit-transform: scale(1.2);
-    -moz-transform: scale(1.2);
-    -ms-transform: scale(1.2);
-    -o-transform: scale(1.2);
-}
+     cursor: pointer;
+     transform:scale(1.2);
+     -webkit-transform: scale(1.2);
+     -moz-transform: scale(1.2);
+     -ms-transform: scale(1.2);
+     -o-transform: scale(1.2);
+ }
 .contentHtml{
     padding: 20px;
     box-shadow: none;

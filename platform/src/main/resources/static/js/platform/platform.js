@@ -92,10 +92,9 @@ function msg_star(id,t) {
 }
 //查看评论
 function msg_comment(id) {
-    parent.layer.open({
+    var index = parent.layer.open({
         title:"评论",
         scrollbar:false,
-        offset:'l',
         anim: 5,
         type: 2,
         area: ['600px','100%'],
@@ -103,6 +102,7 @@ function msg_comment(id) {
         maxmin: true,
         content: '/msg/toComment/'+$("#user_id").val()+"/"+id
     });
+    //layer.full(index);
 }
 //我的评论
 function comments() {
