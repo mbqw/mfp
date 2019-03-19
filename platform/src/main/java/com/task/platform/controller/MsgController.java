@@ -246,6 +246,7 @@ public class MsgController extends BaseController{
         PrintWriter out = super.getOut(response);
         Map<String, Object> map = new HashMap<String, Object>();
         try {
+            params.put("content",params.get("content").toString().replaceAll("(http(s?)://)[a-zA-Z0-9.:]*",""));
             dynamicMsgService.addComment(params);
             params.put("createTime",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
             map.put("success", true);
