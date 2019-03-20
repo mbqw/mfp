@@ -1,6 +1,5 @@
 package com.task.platform.init;
 
-import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
