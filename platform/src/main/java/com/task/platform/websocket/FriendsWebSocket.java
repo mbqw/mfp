@@ -31,7 +31,7 @@ public class FriendsWebSocket extends BaseController {
 
     private static IMService imService;
     @Autowired
-    public void setChatService(IMService imService) {
+    public void setImService(IMService imService) {
         FriendsWebSocket.imService = imService;
     }
 

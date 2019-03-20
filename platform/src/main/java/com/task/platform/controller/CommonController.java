@@ -74,8 +74,7 @@ public class CommonController extends BaseController {
             user.setPassword(MD5Utils.getMd5Str(user.getPassword()));
             List<User> userList = userService.getObjectList(user);
             if (userList!=null &&userList.size()>0){
-                //true在线,false离线或隐身
-                request.getSession().setAttribute(user.getId()+"",true);
+                request.getSession().setAttribute("user",userList.get(0));
                 map.put("success", true);
                 map.put("id", userList.get(0).getId());
             } else{

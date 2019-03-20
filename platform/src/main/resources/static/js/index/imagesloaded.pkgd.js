@@ -29,11 +29,11 @@
 		nativeIndexOf = Array.prototype.indexOf ? true : false;
 
 	/**
-	 * Finds the index of the listener for the event in it's storage array.
+	 * Finds the index of the init for the event in it's storage array.
 	 *
 	 * @param {Function} listener Method to look for.
 	 * @param {Function[]} listeners Array of listeners to search through.
-	 * @return {Number} Index of the specified listener, -1 if not found
+	 * @return {Number} Index of the specified init, -1 if not found
 	 * @api private
 	 */
 	function indexOfListener(listener, listeners) {
@@ -46,7 +46,7 @@
 		// Use a manual loop to find the index
 		var i = listeners.length;
 		while (i--) {
-			// If the listener matches, return it's index
+			// If the init matches, return it's index
 			if (listeners[i] === listener) {
 				return i;
 			}
@@ -67,13 +67,13 @@
 	};
 
 	/**
-	 * Returns the listener array for the specified event.
-	 * Will initialise the event object and listener arrays if required.
+	 * Returns the init array for the specified event.
+	 * Will initialise the event object and init arrays if required.
 	 * Will return an object if you use a regex search. The object contains keys for each matched event. So /ba[rz]/ might return an object containing bar and baz. But only if you have either defined them with defineEvent or added some listeners to them.
-	 * Each property in the object response is an array of listener functions.
+	 * Each property in the object response is an array of init functions.
 	 *
 	 * @param {String|RegExp} evt Name of the event to return the listeners from.
-	 * @return {Function[]|Object} All listener functions for the event.
+	 * @return {Function[]|Object} All init functions for the event.
 	 */
 	proto.getListeners = function (evt) {
 		// Create a shortcut to the storage object
@@ -103,7 +103,7 @@
 	 * Fetches the requested listeners via getListeners but will always return the results inside an object. This is mainly for internal use but others may find it useful.
 	 *
 	 * @param {String|RegExp} evt Name of the event to return the listeners from.
-	 * @return {Object} All listener functions for an event in an object.
+	 * @return {Object} All init functions for an event in an object.
 	 */
 	proto.getListenersAsObject = function (evt) {
 		var listeners = this.getListeners(evt),
@@ -118,12 +118,12 @@
 	};
 
 	/**
-	 * Adds a listener function to the specified event.
-	 * The listener will not be added if it is a duplicate.
-	 * If the listener returns true then it will be removed after it is called.
-	 * If you pass a regular expression as the event name then the listener will be added to all events that match it.
+	 * Adds a init function to the specified event.
+	 * The init will not be added if it is a duplicate.
+	 * If the init returns true then it will be removed after it is called.
+	 * If you pass a regular expression as the event name then the init will be added to all events that match it.
 	 *
-	 * @param {String|RegExp} evt Name of the event to attach the listener to.
+	 * @param {String|RegExp} evt Name of the event to attach the init to.
 	 * @param {Function} listener Method to be called when the event is emitted. If the function returns true then it will be removed after calling.
 	 * @return {Object} Current instance of EventEmitter for chaining.
 	 */
@@ -148,7 +148,7 @@
 	proto.on = proto.addListener;
 
 	/**
-	 * Defines an event name. This is required if you want to use a regex to add a listener to multiple events at once. If you don't do this then how do you expect it to know what event to add to? Should it just add to every possible match for a regex? No. That is scary and bad.
+	 * Defines an event name. This is required if you want to use a regex to add a init to multiple events at once. If you don't do this then how do you expect it to know what event to add to? Should it just add to every possible match for a regex? No. That is scary and bad.
 	 * You need to tell it what event names should be matched by a regex.
 	 *
 	 * @param {String} evt Name of the event to create.
@@ -174,10 +174,10 @@
 	};
 
 	/**
-	 * Removes a listener function from the specified event.
-	 * When passed a regular expression as the event name, it will remove the listener from all events that match it.
+	 * Removes a init function from the specified event.
+	 * When passed a regular expression as the event name, it will remove the init from all events that match it.
 	 *
-	 * @param {String|RegExp} evt Name of the event to remove the listener from.
+	 * @param {String|RegExp} evt Name of the event to remove the init from.
 	 * @param {Function} listener Method to remove from the event.
 	 * @return {Object} Current instance of EventEmitter for chaining.
 	 */
@@ -207,12 +207,12 @@
 
 	/**
 	 * Adds listeners in bulk using the manipulateListeners method.
-	 * If you pass an object as the second argument you can add to multiple events at once. The object should contain key value pairs of events and listeners or listener arrays. You can also pass it an event name and an array of listeners to be added.
+	 * If you pass an object as the second argument you can add to multiple events at once. The object should contain key value pairs of events and listeners or init arrays. You can also pass it an event name and an array of listeners to be added.
 	 * You can also pass it a regular expression to add the array of listeners to all events that match it.
 	 * Yeah, this function does quite a bit. That's probably a bad thing.
 	 *
 	 * @param {String|Object|RegExp} evt An event name if you will pass an array of listeners next. An object if you wish to add to multiple events at once.
-	 * @param {Function[]} [listeners] An optional array of listener functions to add.
+	 * @param {Function[]} [listeners] An optional array of init functions to add.
 	 * @return {Object} Current instance of EventEmitter for chaining.
 	 */
 	proto.addListeners = function (evt, listeners) {
@@ -222,12 +222,12 @@
 
 	/**
 	 * Removes listeners in bulk using the manipulateListeners method.
-	 * If you pass an object as the second argument you can remove from multiple events at once. The object should contain key value pairs of events and listeners or listener arrays.
+	 * If you pass an object as the second argument you can remove from multiple events at once. The object should contain key value pairs of events and listeners or init arrays.
 	 * You can also pass it an event name and an array of listeners to be removed.
 	 * You can also pass it a regular expression to remove the listeners from all events that match it.
 	 *
 	 * @param {String|Object|RegExp} evt An event name if you will pass an array of listeners next. An object if you wish to remove from multiple events at once.
-	 * @param {Function[]} [listeners] An optional array of listener functions to remove.
+	 * @param {Function[]} [listeners] An optional array of init functions to remove.
 	 * @return {Object} Current instance of EventEmitter for chaining.
 	 */
 	proto.removeListeners = function (evt, listeners) {
@@ -238,13 +238,13 @@
 	/**
 	 * Edits listeners in bulk. The addListeners and removeListeners methods both use this to do their job. You should really use those instead, this is a little lower level.
 	 * The first argument will determine if the listeners are removed (true) or added (false).
-	 * If you pass an object as the second argument you can add/remove from multiple events at once. The object should contain key value pairs of events and listeners or listener arrays.
+	 * If you pass an object as the second argument you can add/remove from multiple events at once. The object should contain key value pairs of events and listeners or init arrays.
 	 * You can also pass it an event name and an array of listeners to be added/removed.
 	 * You can also pass it a regular expression to manipulate the listeners of all events that match it.
 	 *
 	 * @param {Boolean} remove True if you want to remove listeners, false if you want to add.
 	 * @param {String|Object|RegExp} evt An event name if you will pass an array of listeners next. An object if you wish to add/remove from multiple events at once.
-	 * @param {Function[]} [listeners] An optional array of listener functions to add/remove.
+	 * @param {Function[]} [listeners] An optional array of init functions to add/remove.
 	 * @return {Object} Current instance of EventEmitter for chaining.
 	 */
 	proto.manipulateListeners = function (remove, evt, listeners) {
@@ -258,7 +258,7 @@
 		if (typeof evt === 'object' && !(evt instanceof RegExp)) {
 			for (i in evt) {
 				if (evt.hasOwnProperty(i) && (value = evt[i])) {
-					// Pass the single listener straight through to the singular method
+					// Pass the single init straight through to the singular method
 					if (typeof value === 'function') {
 						single.call(this, i, value);
 					}
@@ -321,14 +321,14 @@
 
 	/**
 	 * Emits an event of your choice.
-	 * When emitted, every listener attached to that event will be executed.
-	 * If you pass the optional argument array then those arguments will be passed to every listener upon execution.
+	 * When emitted, every init attached to that event will be executed.
+	 * If you pass the optional argument array then those arguments will be passed to every init upon execution.
 	 * Because it uses `apply`, your array of arguments will be passed as if you wrote them out separately.
 	 * So they will not arrive within the array on the other side, they will be separate.
 	 * You can also pass a regular expression to emit to all events that match it.
 	 *
 	 * @param {String|RegExp} evt Name of the event to emit and execute listeners for.
-	 * @param {Array} [args] Optional array of arguments to be passed to each listener.
+	 * @param {Array} [args] Optional array of arguments to be passed to each init.
 	 * @return {Object} Current instance of EventEmitter for chaining.
 	 */
 	proto.emitEvent = function (evt, args) {
@@ -342,7 +342,7 @@
 				i = listeners[key].length;
 
 				while (i--) {
-					// If the listener returns true then it shall be removed from the event
+					// If the init returns true then it shall be removed from the event
 					// The function is executed either with a basic call or an apply if there is an args array
 					response = args ? listeners[key][i].apply(null, args) : listeners[key][i]();
 					if (response === true) {
@@ -366,7 +366,7 @@
 	 * As with emitEvent, you can pass a regex in place of the event name to emit to all events that match it.
 	 *
 	 * @param {String|RegExp} evt Name of the event to emit and execute listeners for.
-	 * @param {...*} Optional additional arguments to be passed to each listener.
+	 * @param {...*} Optional additional arguments to be passed to each init.
 	 * @return {Object} Current instance of EventEmitter for chaining.
 	 */
 	proto.emit = function (evt) {
