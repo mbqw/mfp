@@ -63,13 +63,6 @@ public class MsgController extends BaseController{
         modelMap.addAttribute("m_id",m_id);
         return new ModelAndView("/msg/comment",modelMap);
     }
-    //评论
-    @RequestMapping("/toCommentList/{user_id}")
-    public ModelAndView toCommentList(ModelMap modelMap,@PathVariable Integer user_id){
-        User user = userService.getObjectById(user_id);
-        modelMap.addAttribute("user",user);
-        return new ModelAndView("/msg/commentList",modelMap);
-    }
     //上传文件
     @RequestMapping("/uploadImgs/{id}")
     public void uploadImgs(HttpServletResponse response, HttpServletRequest request, @PathVariable Integer id, MultipartFile file){

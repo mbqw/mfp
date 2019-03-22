@@ -75,10 +75,8 @@
         <result column="createTime" property="createTime" jdbcType="TIMESTAMP" javaType="string"></result>
     </resultMap>
     <select id="findCommentsPageList" resultMap="date_string">
-        SELECT c.*,c2.hasComment,s.username srcUsername,s.avatar srcAvatar
+        SELECT c.*,getLengthSeparator(getChildList(c.id),',') hasComment,s.username srcUsername,s.avatar srcAvatar
          FROM `dyn_msg_comment` c
-         LEFT JOIN (SELECT pid,COUNT(*) hasComment FROM dyn_msg_comment WHERE descUid IS NOT NULL GROUP BY pid) c2
-         ON c.id = c2.pid
          INNER JOIN USER s
          ON c.srcUid = s.id
         WHERE c.m_id = #{id} AND c.descUid IS NULL
@@ -91,7 +89,7 @@
          ON c.srcUid = s.id
          LEFT JOIN USER d
          ON c.descUid = d.id
-        WHERE c.pid = #{pid} AND c.descUid IS NOT NULL
+        WHERE FIND_IN_SET(c.id, getChildList(#{pid})) AND c.descUid IS NOT NULL
     </select>
     <insert id="addComment" parameterType="map" useGeneratedKeys="true" keyProperty="id" >
         INSERT INTO dyn_msg_comment

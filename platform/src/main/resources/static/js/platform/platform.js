@@ -97,7 +97,7 @@ function msg_comment(id) {
         scrollbar:false,
         anim: 5,
         type: 2,
-        area: ['600px','100%'],
+        area: ['610px','100%'],
         fixed: false, //不固定
         maxmin: true,
         content: '/msg/toComment/'+$("#user_id").val()+"/"+id
@@ -114,7 +114,7 @@ function comments() {
         area: ['70%','90%'],
         fixed: false, //不固定
         maxmin: true,
-        content: '/msg/toCommentList/'+$("#user_id").val()
+        content: '/comment/page/'+$("#user_id").val()
     });
 }
 //查看照片

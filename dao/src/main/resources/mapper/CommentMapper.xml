@@ -9,8 +9,12 @@
         <result column="m_id" property="mId" />
         <result column="srcUid" property="srcUid" />
         <result column="descUid" property="descUid" />
+        <result column="username" property="username" />
+        <result column="avatar" property="avatar" />
         <result column="content" property="content" />
-        <result column="createTime" property="createTime" />
+        <result column="srcContent" property="srcContent" />
+        <result column="msgContent" property="msgContent" />
+        <result column="createTime" property="createTime" javaType="string" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
@@ -30,13 +34,13 @@
             <if test="createTime != null" >createTime,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
-            <if test="id != null" >#{id,jdbcType=INTEGER},</if>
-            <if test="pid != null" >#{pid,jdbcType=INTEGER},</if>
-            <if test="mId != null" >#{mId,jdbcType=INTEGER},</if>
-            <if test="srcUid != null" >#{srcUid,jdbcType=INTEGER},</if>
-            <if test="descUid != null" >#{descUid,jdbcType=INTEGER},</if>
-            <if test="content != null" >#{content,jdbcType=STRING},</if>
-            <if test="createTime != null" >#{createTime,jdbcType=STRING},</if>
+            <if test="id != null" >#{id},</if>
+            <if test="pid != null" >#{pid},</if>
+            <if test="mId != null" >#{mId},</if>
+            <if test="srcUid != null" >#{srcUid},</if>
+            <if test="descUid != null" >#{descUid},</if>
+            <if test="content != null" >#{content},</if>
+            <if test="createTime != null" >#{createTime},</if>
         </trim>
     </insert>
 
@@ -62,7 +66,15 @@
     </select>
 
     <select id="findByObjectPageList" resultMap="BaseResultMap">
-        select * from dyn_msg_comment
+        SELECT c.*,m.content msgContent,c2.content srcContent,u.username,u.avatar FROM dyn_msg_comment c
+        INNER JOIN (SELECT id,content FROM u_dyn_msg) m
+        ON c.m_id = m.id
+        LEFT JOIN (SELECT id,content FROM dyn_msg_comment) c2
+        ON c.pid = c2.id
+        LEFT JOIN user u
+        ON
+        <if test="srcUid != null and srcUid != ''" >c.descUid = u.id</if>
+        <if test="descUid != null and descUid != ''" >c.srcUid=u.id</if>
         <where>
             <if test="id != null and id != ''" > AND id=#{id}</if>
             <if test="pid != null and pid != ''" > AND pid=#{pid}</if>
@@ -72,6 +84,7 @@
             <if test="content != null and content != ''" > AND content=#{content}</if>
             <if test="createTime != null and createTime != ''" > AND createTime=#{createTime}</if>
         </where>
+        order by c.createTime desc
     </select>
 
     <select id="getObjectList" resultMap="BaseResultMap">

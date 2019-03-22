@@ -34,7 +34,7 @@
 </body>
 <script src="/layui/layui.all.js"></script>
 <script type="text/html" id="role">
-    <li data-id="{{ d.id }}" data-srcuid="{{ d.srcUid }}" data-isopen="0" data-srcusername="{{ d.srcUsername }}">
+    <li data-id="{{ d.id }}" data-pid="-1" data-srcuid="{{ d.srcUid }}" data-isopen="0" data-srcusername="{{ d.srcUsername }}">
         <a href="" onclick="window.parent.toDetail('{{d.srcUid}}')">
             <img src="{{ d.srcAvatar }}" class="layui-circle layim-msgbox-avatar">
         </a>
@@ -46,9 +46,9 @@
             <span>{{ d.content }}</span>
         </p>
         <p class="layim-msgbox-btn">
-            {{# if(d.hasComment!=null){ }}
+            {{# if( d.hasComment!= null && d.hasComment!=1){ }}
             <button class="layui-btn layui-btn-sm layui-btn-primary" data-type="more">
-                查看回复(<span style="padding: 0" id='floorCount{{d.id}}'>{{ d.hasComment }}</span>)
+                查看回复(<span style="padding: 0" id='floorCount{{d.id}}'>{{ d.hasComment -1 }}</span>)
             </button>
             {{# } else{ }}
             <button class="layui-btn layui-btn-sm layui-btn-primary" data-type="more" style="display: none">
@@ -64,7 +64,7 @@
 
 </script>
 <script type="text/html" id="floor">
-    <li data-id="{{ d.pid }}" data-srcuid="{{ d.srcUid }}" data-srcusername="{{ d.srcUsername }}">
+    <li data-id="{{ d.id }}" data-pid="{{ d.pid }}" data-srcuid="{{ d.srcUid }}" data-srcusername="{{ d.srcUsername }}">
         <a href="" onclick="window.parent.toDetail('{{d.srcUid}}')">
             <img src="{{ d.srcAvatar }}" class="layui-circle layim-msgbox-avatar" style="width: 30px;height: 30px;left: 10px; top: 15px;">
         </a>
@@ -97,6 +97,7 @@
         var thisdescUid;
         var mylayerIndex;
         var descUsername;
+        var thisFloorId;
         flow.load({
             elem: '#comment'
             ,isAuto:true
@@ -141,10 +142,16 @@
             },
             reply: function(othis) {
                 var li = othis.parents('li');
-                var pid = li.data('id')
+                var id = li.data('id');
+                var pid = li.data('pid');
+                if (pid == -1){
+                    thisFloorId = id;
+                } else{
+                    thisFloorId = li.parents('div').parents('li').data('id');
+                }
                 var descUid = li.data('srcuid');
                 descUsername = li.data('srcusername');
-                createEdit(pid,descUid);
+                createEdit(id,descUid);
             },
             add:function () {
                 addComment();
@@ -292,9 +299,9 @@
                                 });
                             }
                         }else{
-                            $("#floorCount"+thispid).text(Number($("#floorCount"+thispid).text())+1)
-                            $("#floorCount"+thispid).parent("button").css("display","");
-                            var myEle = $("#floor"+thispid).children("div");
+                            $("#floorCount"+thisFloorId).text(Number($("#floorCount"+thisFloorId).text())+1)
+                            $("#floorCount"+thisFloorId).parent("button").css("display","");
+                            var myEle = $("#floor"+thisFloorId).children("div");
                             if (myEle.length > 0 && myEle.text()==' '){
                                 var getTpl = floor.innerHTML
                                 laytpl(getTpl).render(data.data, function(html){

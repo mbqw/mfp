@@ -35,8 +35,7 @@ public class FriendsWebSocket extends BaseController {
         FriendsWebSocket.imService = imService;
     }
 
-    /**
-     * 连接建立成功调用的方法*/
+    //连接建立成功调用的方法
     @OnOpen
     public void onOpen(@PathParam("id")Integer id, Session session) {
         try {
@@ -65,9 +64,7 @@ public class FriendsWebSocket extends BaseController {
         }
     }
 
-    /**
-     * 连接关闭调用的方法
-     */
+    //连接关闭调用的方法
     @OnClose
     public void onClose() {
         try {
@@ -96,10 +93,7 @@ public class FriendsWebSocket extends BaseController {
         }
     }
 
-    /**
-     * 收到客户端消息后调用的方法
-     *
-     * @param message 客户端发送过来的消息*/
+    //收到客户端消息后调用的方法
     @OnMessage
     public void onMessage(String message, Session session) {
         try {
@@ -120,13 +114,7 @@ public class FriendsWebSocket extends BaseController {
             e.printStackTrace();
         }
     }
-
-    /**
-     * 得到所有好友的在线状态
-     * @param session
-     * @param map
-     * @throws IOException
-     */
+    //得到所有好友的在线状态
     private void isOnline(Session session, Map<String, Map> map) throws IOException {
         Map data = map.get("data");
         List<UserGroup> list = imService.getFriendsById(data.get("id"));
@@ -148,12 +136,7 @@ public class FriendsWebSocket extends BaseController {
         resMap.put("data",params);
         session.getBasicRemote().sendText(objectToJson(resMap));
     }
-    /**
-     * 添加群组
-     * @param session
-     * @param map
-     * @throws IOException
-     */
+    //添加群组
     private void addGroup(Session session, Map<String, Map> map) throws IOException {
         Map data = map.get("data");
         Map params = new HashMap();
@@ -174,12 +157,7 @@ public class FriendsWebSocket extends BaseController {
         }
 
     }
-    /**
-     * 添加好友
-     * @param session
-     * @param map
-     * @throws IOException
-     */
+    //添加好友
     private void addFriend(Session session, Map<String, Map> map) throws IOException {
         Map data = map.get("data");
         data.put("type","1");
@@ -195,12 +173,7 @@ public class FriendsWebSocket extends BaseController {
             toSession.getBasicRemote().sendText(objectToJson(resMap));
         }
     }
-    /**
-     * 群组信息
-     * @param session
-     * @param map
-     * @throws IOException
-     */
+    //群组信息
     private void group(Session session, Map<String, Map> map) throws IOException {
         Map mine = map.get("mine");
         Map to = map.get("to");
@@ -230,12 +203,7 @@ public class FriendsWebSocket extends BaseController {
             }
         }
     }
-    /**
-     * 好友信息
-     * @param session
-     * @param map
-     * @throws IOException
-     */
+    //好友信息
     private void friend(Session session, Map<String, Map> map) throws IOException {
 
         Map mine = map.get("mine");
@@ -271,10 +239,7 @@ public class FriendsWebSocket extends BaseController {
         toSession.getBasicRemote().sendText(objectToJson(resMap));
     }
 
-    /**
-     * 发生错误时调用
-     */
-
+    //发生错误时调用
      @OnError
      public void onError(Session session, Throwable error) {
         System.out.println("发生错误");

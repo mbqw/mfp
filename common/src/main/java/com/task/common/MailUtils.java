@@ -19,10 +19,10 @@ public class MailUtils {
 
     //服务器地址
     private static String emailSMTPHost="smtp.qq.com";
-    //发件人账号
+    //账号
     private static String emailAccount="wb322@foxmail.com";
-    //发件人邮箱密码（授权码）
-    private static String emailPassword="qefybrgmrtiqbjhh";
+    //邮箱密码（授权码）
+    private static String emailPassword="lisdkprbehewbgec";
 
     /**
      * 发送邮件
@@ -76,7 +76,7 @@ public class MailUtils {
         builder.append("\n" + emailContent);
 
         //写入我的官网
-        builder.append("\n官网：" +"https://www.mfp.com");
+        builder.append("\n官网：" +"https://www.mfp.com（TEST）");
 
         //定义要输出日期字符串的格式
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

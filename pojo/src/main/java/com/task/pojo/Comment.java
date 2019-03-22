@@ -37,9 +37,14 @@ public class Comment implements Serializable {
 
     private Integer descUid;
 
+    private String msgContent;
     private String content;
+    private String srcContent;
 
     private String createTime;
+
+    private String username;
+    private String avatar;
 
 
 }

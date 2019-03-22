@@ -13,12 +13,12 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         return new LoginInterceptor();
     }
 
-    @Override
+    /*@Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(getLoginInterceptor())
                 .addPathPatterns("/**")
                 .excludePathPatterns("/common/*","/css/**","/fonts/**","/images/**","/js/**","/layui/**");
-    }
+    }*/
 
     /*@Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

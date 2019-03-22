@@ -104,8 +104,15 @@ public class CommonController extends BaseController {
                 map.put("success", true);
                 map.put("id", userList.get(0).getId());
                 if (user.getEmail()!=null){
-                    String key = MailUtils.sendKey(user.getEmail());
-                    request.getSession().setAttribute("key",key);
+                    String key = null;
+                    try {
+                        key = MailUtils.sendKey(user.getEmail());
+                        request.getSession().setAttribute("key",key);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        map.put("success", false);
+                        map.put("info", "邮件发送失败");
+                    }
                 }
             } else{
                 map.put("success", false);
