@@ -98,7 +98,6 @@ public class MailUtils {
         Transport transport = session.getTransport();
 
         //连接自己的邮箱账户
-       //密码不是自己QQ邮箱的密码，而是在开启SMTP服务时所获取到的授权码
        //connect(host, user, password)
        transport.connect( emailSMTPHost, emailAccount, emailPassword);
 
