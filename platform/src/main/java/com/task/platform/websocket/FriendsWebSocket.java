@@ -143,7 +143,7 @@ public class FriendsWebSocket extends BaseController {
         params.put("system",true);
         params.put("id",data.get("groupId"));
         params.put("type","group");
-        params.put("content",data.get("from")+"     邀请 "+data.get("usernames")+" 加入群聊");
+        params.put("content",data.get("from")+" 邀请 "+data.get("usernames")+" 加入群聊");
         List<Integer> list = imService.getGroupMembersById(data.get("groupId"));
         for (Integer integer : list) {
             Session toSession = sessionMap.get(integer+"");
