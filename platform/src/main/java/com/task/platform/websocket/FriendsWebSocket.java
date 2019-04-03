@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @ServerEndpoint("/websocket/{id}")
 @Component
 public class FriendsWebSocket extends BaseController {
-    //静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
+    //静态变量，用来记录当前在线连接数。
     private static int onlineCount = 0;
 
     private static transient volatile Map<String, Session> sessionMap = new ConcurrentHashMap<String, Session>();
