@@ -18,6 +18,13 @@
         body {
             background-color: #F2F3F4;
         }
+        .mybtnclass{
+            padding:5px;
+            border-radius: 5px;
+        }
+        .mybtnclass:hover{
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -187,6 +194,11 @@
                 url: '/im/upload?type=file&id='+$("#user_id").val()
                 ,type: 'post'
             }
+            ,tool: [{
+                alias: 'sendData' //工具别名
+                ,title: '发送个人主页' //工具名称
+                ,icon: '&#xe674;' //工具图标，参考图标文档
+            }]
             //扩展工具栏
             /*,tool: [{
                 alias: 'code'
@@ -201,8 +213,8 @@
             ,voice:'default.wav'
             ,msgbox: '/layui/css/modules/layim/html/msgbox.html?id='+userid //消息盒子页面地址
             ,chatLog: '/layui/css/modules/layim/html/chatlog.html' //聊天记录页面地址
-            /*,find: '/layui/css/modules/layim/html/find.html' //发现页面地址
-            ,copyright:true*/
+            /*,find: '/layui/css/modules/layim/html/find.html' //发现页面地址*/
+            ,copyright:true
         });
         //监听layim建立就绪
         layim.on('ready', function(res){
@@ -253,6 +265,12 @@
                     }
                 }
             })
+        });
+        //监听自定义工具栏点击
+        layim.on('tool(sendData)', function(insert, send, obj){
+            var id = $("#user_id").val();
+            insert("[pre class=mybtnclass onclick=toDetail("+id+")]点击查看资料[/pre]"); //将内容插入到编辑器，主要由insert完成
+            send(); //自动发送
         });
         //发送信息事件
         layim.on('sendMessage', function(data) {

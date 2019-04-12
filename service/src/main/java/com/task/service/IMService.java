@@ -32,4 +32,5 @@ public interface IMService extends BaseService<IMData>{
     List<Map> getOfflineChat(Integer id);
     PageList<Map> findChatlogPageList(Map<String, Object> params, PageBounds pageBounds);
     Integer getChatlogCount(Map map);
+
 }

@@ -170,7 +170,6 @@
         var myValue = $("#registerForm input[name='"+type+"']").val();
         if (type=='username'){
             if (!/^[\u4E00-\u9FA5A-Za-z][\u4E00-\u9FA5A-Za-z0-9_]{1,11}$/.test(myValue)){
-                alert(1);
                 $("#registerSpan1").css("display","");
                 $("#registerSpan1").text("请输入首位为汉字字母的汉字字母数字下划线组合,长度为2-12");
             }else{
